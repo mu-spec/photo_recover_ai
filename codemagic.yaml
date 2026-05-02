@@ -7,7 +7,7 @@ workflows:
     scripts:
       - name: Get Flutter packages
         script: flutter pub get
-      - name: Build release APK
-        script: flutter build apk --release
+      - name: Build release APK (split by ABI)
+        script: flutter build apk --release --split-per-abi
     artifacts:
-      - build/app/outputs/flutter-apk/app-release.apk
+      - build/app/outputs/flutter-apk/app-*-release.apk
