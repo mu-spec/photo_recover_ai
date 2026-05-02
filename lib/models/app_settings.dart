@@ -25,7 +25,7 @@ class AppSettings {
   String get themeMode => _prefs.getString(keyThemeMode) ?? 'system';
   bool get darkModeEnabled => _prefs.getBool(keyDarkMode) ?? false;
   bool get notificationsEnabled => _prefs.getBool(keyNotifications) ?? true;
-  bool get autoScanEnabled => _prefs.getBool(keyAutoScan) ?? true;
+  bool get autoScanEnabled => _prefs.getBool(keyAutoScan) ?? false;
   String get scanMode => _prefs.getString(keyScanMode) ?? 'quick';
   String? get lastScanState => _prefs.getString(keyLastScanState);
 
