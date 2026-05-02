@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../services/storage_analyzer_service.dart';
 import '../utils/app_theme.dart';
 import '../widgets/common_widgets.dart';
@@ -14,6 +15,7 @@ class StorageAnalyzerScreen extends StatefulWidget {
 class _StorageAnalyzerScreenState extends State<StorageAnalyzerScreen> {
   final StorageAnalyzerService _analyzer = StorageAnalyzerService();
   late Future<_AnalysisData> _analysisFuture;
+  bool _hasStorageAccess = true;
 
   @override
   void initState() {
@@ -22,6 +24,29 @@ class _StorageAnalyzerScreenState extends State<StorageAnalyzerScreen> {
   }
 
   Future<_AnalysisData> _loadData() async {
+    final hasPermission = await _ensureStoragePermission();
+    if (!hasPermission) {
+      _hasStorageAccess = false;
+      return _AnalysisData(
+        categories: [],
+        totalBytes: 0,
+        usedBytes: 0,
+        freeBytes: 0,
+        topFolders: [],
+        cleanupSuggestions: [
+          _CleanupSuggestion(
+            icon: Icons.lock_outline,
+            title: 'Storage Permission Needed',
+            description: 'Grant storage access to analyze folders and cleanup suggestions.',
+            potentialSavings: '0 B',
+            action: 'none',
+            actionPath: '',
+          ),
+        ],
+      );
+    }
+    _hasStorageAccess = true;
+
     final categories = await _analyzer.analyzeStorage();
     final totalBytes = await _analyzer.getTotalStorageBytes();
     final usedBytes = await _analyzer.getUsedStorageBytes();
@@ -92,6 +117,24 @@ class _StorageAnalyzerScreenState extends State<StorageAnalyzerScreen> {
     setState(() {
       _analysisFuture = _loadData();
     });
+  }
+
+  Future<bool> _ensureStoragePermission() async {
+    if (await Permission.manageExternalStorage.isGranted) {
+      return true;
+    }
+
+    if (await Permission.storage.isGranted) {
+      return true;
+    }
+
+    final storageStatus = await Permission.storage.request();
+    if (storageStatus.isGranted) {
+      return true;
+    }
+
+    final manageStatus = await Permission.manageExternalStorage.request();
+    return manageStatus.isGranted;
   }
 
   Future<void> _executeCleanup(_CleanupSuggestion suggestion) async {
@@ -233,6 +276,40 @@ class _StorageAnalyzerScreenState extends State<StorageAnalyzerScreen> {
   }
 
   Widget _buildContent(_AnalysisData data) {
+    if (!_hasStorageAccess) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.lock_outline, size: 60, color: Color(0xFFFF6B6B)),
+              const SizedBox(height: 14),
+              Text(
+                'Storage Permission Required',
+                style: TextStyle(
+                  color: AppTheme.textPrimary,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Allow storage access so we can read folders and show real usage by category.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+              ),
+              const SizedBox(height: 18),
+              ElevatedButton(
+                onPressed: _refresh,
+                child: const Text('Grant Permission & Retry'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     final usedPct = data.totalBytes > 0 ? data.usedBytes / data.totalBytes : 0.0;
     final freePct = 1.0 - usedPct;
     final totalCatSize = data.categories.fold<int>(0, (sum, c) => sum + c.sizeInBytes);
