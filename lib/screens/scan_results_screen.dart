@@ -6,6 +6,7 @@ import '../models/recoverable_file.dart';
 import '../services/storage_scanner.dart';
 import '../services/database_helper.dart';
 import '../services/file_analyzer.dart';
+import '../services/recovery_insights_service.dart';
 import '../utils/app_theme.dart';
 import '../widgets/common_widgets.dart';
 import 'preview_screen.dart';
@@ -30,6 +31,7 @@ class _ScanResultsScreenState extends State<ScanResultsScreen>
     with TickerProviderStateMixin {
   final RecoveryService _recoveryService = RecoveryService();
   final DatabaseHelper _db = DatabaseHelper.instance;
+  final RecoveryInsightsService _insights = RecoveryInsightsService();
 
   List<RecoverableFile> _displayedFiles = [];
   final Set<int> _selectedIndices = {};
@@ -346,6 +348,9 @@ class _ScanResultsScreenState extends State<ScanResultsScreen>
 
     // Provider is already imported via main.dart
     Provider.of<AppSettingsProvider>(context, listen: false).incrementRecoveredCount(recovered);
+    try {
+      await _insights.recordRecovery(widget.fileType, recovered, totalSize);
+    } catch (_) {}
 
     // Show interstitial ad after recovery
     adService.showInterstitialAd();

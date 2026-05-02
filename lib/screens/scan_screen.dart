@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../main.dart';
 import '../services/storage_scanner.dart';
 import '../services/database_helper.dart';
+import '../services/recovery_insights_service.dart';
 import '../models/recoverable_file.dart';
 import '../utils/app_theme.dart';
 import 'scan_results_screen.dart';
@@ -24,6 +25,7 @@ class ScanScreen extends StatefulWidget {
 class _ScanScreenState extends State<ScanScreen> with TickerProviderStateMixin {
   final StorageScanner _scanner = StorageScanner();
   final DatabaseHelper _db = DatabaseHelper.instance;
+  final RecoveryInsightsService _insights = RecoveryInsightsService();
 
   double _progress = 0.0;
   String _currentFolder = 'Preparing...';
@@ -193,7 +195,7 @@ class _ScanScreenState extends State<ScanScreen> with TickerProviderStateMixin {
     );
   }
 
-  void _handleScanComplete() {
+  Future<void> _handleScanComplete() async {
     if (_isComplete) return; // Prevent double-call
 
     final finalResults = _scanner.lastScanResults;
@@ -214,10 +216,19 @@ class _ScanScreenState extends State<ScanScreen> with TickerProviderStateMixin {
 
     _checkController.forward();
 
-    // Save to database in background (non-blocking)
-    _db.insertScanResults(finalResults).catchError((e) {
-      debugPrint('DB save error (non-blocking): $e');
-    });
+    try {
+      // Persist results before user returns to Home stats, so counters refresh correctly.
+      await _db.insertScanResults(finalResults);
+    } catch (e) {
+      debugPrint('DB save error: $e');
+    }
+
+    try {
+      // Track scan insights for Recovery Stats / Insights screen.
+      await _insights.recordScan(widget.fileType, finalResults.length);
+    } catch (e) {
+      debugPrint('Insights scan record error: $e');
+    }
   }
 
   void _cancelScan() {
@@ -818,5 +829,4 @@ class _ScanLogEntry {
   final int timestamp;
   _ScanLogEntry({required this.folder, required this.filesInFolder, required this.timestamp});
 }
-
 
