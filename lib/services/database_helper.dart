@@ -4,7 +4,7 @@ import '../models/recoverable_file.dart';
 
 class DatabaseHelper {
   static const _databaseName = 'photo_recover_ai.db';
-  static const _databaseVersion = 2;
+  static const _databaseVersion = 3;
 
   static const tableScanResults = 'scan_results';
   static const tableRecoveryRecords = 'recovery_records';
@@ -45,7 +45,16 @@ class DatabaseHelper {
         fileType TEXT NOT NULL,
         source TEXT NOT NULL,
         isRecovered INTEGER DEFAULT 0,
-        qualityTag TEXT
+        qualityTag TEXT,
+        cameraInfo TEXT,
+        resolution TEXT,
+        gpsLocation TEXT,
+        dateTaken INTEGER,
+        orientation INTEGER,
+        software TEXT,
+        iso INTEGER,
+        corruptionLevel REAL,
+        isNewFile INTEGER DEFAULT 0
       )
     ''');
 
@@ -92,6 +101,38 @@ class DatabaseHelper {
           created_at INTEGER NOT NULL
         )
       ''');
+    }
+
+    if (oldVersion < 3) {
+      await _addColumnIfNotExists(db, tableScanResults, 'cameraInfo', 'TEXT');
+      await _addColumnIfNotExists(db, tableScanResults, 'resolution', 'TEXT');
+      await _addColumnIfNotExists(db, tableScanResults, 'gpsLocation', 'TEXT');
+      await _addColumnIfNotExists(db, tableScanResults, 'dateTaken', 'INTEGER');
+      await _addColumnIfNotExists(db, tableScanResults, 'orientation', 'INTEGER');
+      await _addColumnIfNotExists(db, tableScanResults, 'software', 'TEXT');
+      await _addColumnIfNotExists(db, tableScanResults, 'iso', 'INTEGER');
+      await _addColumnIfNotExists(db, tableScanResults, 'corruptionLevel', 'REAL');
+      await _addColumnIfNotExists(
+        db,
+        tableScanResults,
+        'isNewFile',
+        'INTEGER DEFAULT 0',
+      );
+    }
+  }
+
+  Future<void> _addColumnIfNotExists(
+    Database db,
+    String table,
+    String column,
+    String definition,
+  ) async {
+    final info = await db.rawQuery('PRAGMA table_info($table)');
+    final exists = info.any((row) => row['name'] == column);
+    if (!exists) {
+      await db.execute(
+        'ALTER TABLE $table ADD COLUMN $column $definition',
+      );
     }
   }
 
