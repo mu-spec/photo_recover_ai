@@ -40,7 +40,7 @@ class StorageCategory {
 /// `/storage/emulated/0/`.
 class StorageAnalyzerService {
   static const String _emulatedBase = '/storage/emulated/0';
-  static const int _maxScanDepth = 2;
+  static const int _maxScanDepth = 4;
 
   // ---------------------------------------------------------------------------
   // Category definitions
@@ -85,7 +85,7 @@ class StorageAnalyzerService {
       'name': 'Downloads',
       'icon': Icons.download,
       'color': Colors.teal,
-      'folders': ['Download'],
+      'folders': ['Download', 'Downloads'],
     },
     {
       'name': 'Music',
@@ -120,7 +120,8 @@ class StorageAnalyzerService {
   /// Scans `/storage/emulated/0/` and returns a list of [StorageCategory]
   /// objects with their computed sizes and file counts.
   Future<List<StorageCategory>> analyzeStorage() async {
-    final baseDir = Directory(_emulatedBase);
+    final basePath = await _resolveBasePath();
+    final baseDir = Directory(basePath);
     if (!await baseDir.exists()) {
       return _buildEmptyCategories();
     }
@@ -135,7 +136,7 @@ class StorageAnalyzerService {
       final List<String> matchedPaths = [];
 
       for (final folder in folders) {
-        final dir = Directory('$_emulatedBase/$folder');
+        final dir = Directory('$basePath/$folder');
         if (await dir.exists()) {
           // Mark top-level directory as already accounted to avoid double counting in "Other".
           final topLevel = folder.toString().split('/').first;
@@ -182,7 +183,7 @@ class StorageAnalyzerService {
       color: Colors.grey.shade600,
       sizeInBytes: otherSize,
       fileCount: otherFiles,
-      path: '$_emulatedBase/…',
+      path: '$basePath/...',
     ));
 
     return categories;
@@ -224,9 +225,10 @@ class StorageAnalyzerService {
   /// Reads storage stats using `df` command on Android.
   Future<Map<String, int>?> _getStatFs() async {
     try {
+      final basePath = await _resolveBasePath();
       final result = await Process.run(
         'df',
-        ['-P', _emulatedBase],
+        ['-P', basePath],
       );
       final lines = (result.stdout as String).trim().split('\n');
       if (lines.length >= 2) {
@@ -264,6 +266,7 @@ class StorageAnalyzerService {
   Future<int> clearCacheFiles(String path) async {
     int freed = 0;
     try {
+      if (path.trim().isEmpty) return 0;
       final dir = Directory(path);
       if (!await dir.exists()) return 0;
       final entities = await dir.list(recursive: true, followLinks: false).toList();
@@ -290,6 +293,7 @@ class StorageAnalyzerService {
     int freed = 0;
     final cutoff = DateTime.now().subtract(const Duration(days: 30));
     try {
+      if (basePath.trim().isEmpty) return 0;
       // Build candidate directories from whichever WhatsApp root exists.
       final candidates = <String>[
         // Legacy root: /storage/emulated/0/WhatsApp
@@ -389,6 +393,24 @@ class StorageAnalyzerService {
         path: '',
       ));
   }
+
+  Future<String> _resolveBasePath() async {
+    const candidates = <String>[
+      '/storage/emulated/0',
+      '/sdcard',
+      '/storage/self/primary',
+    ];
+
+    for (final candidate in candidates) {
+      try {
+        if (await Directory(candidate).exists()) {
+          return candidate;
+        }
+      } catch (_) {}
+    }
+
+    return _emulatedBase;
+  }
 }
 
 class _DirStats {
@@ -396,3 +418,5 @@ class _DirStats {
   final int files;
   const _DirStats(this.size, this.files);
 }
+
+
