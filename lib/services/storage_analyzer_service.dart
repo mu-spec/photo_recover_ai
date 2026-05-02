@@ -126,7 +126,7 @@ class StorageAnalyzerService {
     }
 
     final List<StorageCategory> categories = [];
-    final Set<String> accountedPaths = {};
+    final Set<String> accountedTopLevelDirs = {};
 
     for (final def in _categoryDefs) {
       final folders = def['folders'] as List<dynamic>;
@@ -137,7 +137,11 @@ class StorageAnalyzerService {
       for (final folder in folders) {
         final dir = Directory('$_emulatedBase/$folder');
         if (await dir.exists()) {
-          accountedPaths.add(folder);
+          // Mark top-level directory as already accounted to avoid double counting in "Other".
+          final topLevel = folder.toString().split('/').first;
+          if (topLevel.isNotEmpty) {
+            accountedTopLevelDirs.add(topLevel);
+          }
           matchedPaths.add(dir.path);
           final result = await _scanDirectory(dir, 0);
           totalSize += result.size;
@@ -163,7 +167,7 @@ class StorageAnalyzerService {
       for (final entity in entities) {
         if (entity is! Directory) continue;
         final dirName = _dirName(entity.path);
-        if (accountedPaths.contains(dirName)) continue;
+        if (accountedTopLevelDirs.contains(dirName)) continue;
         if (dirName.startsWith('.')) continue;
 
         final result = await _scanDirectory(entity, 0);
@@ -286,12 +290,23 @@ class StorageAnalyzerService {
     int freed = 0;
     final cutoff = DateTime.now().subtract(const Duration(days: 30));
     try {
-      final dirs = ['WhatsApp/Media/WhatsApp Images/Sent',
-                    'WhatsApp/Media/WhatsApp Images',
-                    'WhatsApp/Media/WhatsApp Video/Sent',
-                    'WhatsApp/Media/WhatsApp Video'];
+      // Build candidate directories from whichever WhatsApp root exists.
+      final candidates = <String>[
+        // Legacy root: /storage/emulated/0/WhatsApp
+        '$basePath/Media/WhatsApp Images/Sent',
+        '$basePath/Media/WhatsApp Images',
+        '$basePath/Media/WhatsApp Video/Sent',
+        '$basePath/Media/WhatsApp Video',
+        // New Android/media root: /storage/emulated/0/Android/media/com.whatsapp
+        '$basePath/WhatsApp/Media/WhatsApp Images/Sent',
+        '$basePath/WhatsApp/Media/WhatsApp Images',
+        '$basePath/WhatsApp/Media/WhatsApp Video/Sent',
+        '$basePath/WhatsApp/Media/WhatsApp Video',
+      ];
+
+      final dirs = candidates.toSet().toList();
       for (final rel in dirs) {
-        final dir = Directory('$basePath/$rel');
+        final dir = Directory(rel);
         if (!await dir.exists()) continue;
         await for (final entity in dir.list(recursive: false, followLinks: false)) {
           if (entity is File) {
