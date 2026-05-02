@@ -1,0 +1,117 @@
+Flutter crash report.
+Please report a bug at https://github.com/flutter/flutter/issues.
+
+## command
+
+flutter build apk --release
+
+## exception
+
+ProcessException: ProcessException: Process exited abnormally with exit code 1:
+
+Welcome to Gradle 8.4!
+
+Here are the highlights of this release:
+ - Compiling and testing with Java 21
+ - Faster Java compilation on Windows
+ - Role focused dependency configurations creation
+
+For more details see https://docs.gradle.org/8.4/release-notes.html
+
+
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Cannot locate tasks that match 'app:tasks' as project 'app' not found in root project 'android'.
+
+* Try:
+> Run gradlew projects to get a list of available projects.
+> For more on name expansion, please refer to https://docs.gradle.org/8.4/userguide/command_line_interface.html#sec:name_abbreviation in the Gradle documentation.
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 556ms
+  Command: /home/z/my-project/download/photo_recover_ai/android/gradlew app:tasks --all --console=auto
+
+```
+#0      RunResult.throwException (package:flutter_tools/src/base/process.dart:122:5)
+#1      _DefaultProcessUtils.run (package:flutter_tools/src/base/process.dart:370:19)
+<asynchronous suspension>
+#2      flavorUndefinedHandler.<anonymous closure> (package:flutter_tools/src/android/gradle_errors.dart:269:38)
+<asynchronous suspension>
+#3      AndroidGradleBuilder.buildGradleApp (package:flutter_tools/src/android/gradle.dart:505:40)
+<asynchronous suspension>
+#4      AndroidGradleBuilder.buildApk (package:flutter_tools/src/android/gradle.dart:224:5)
+<asynchronous suspension>
+#5      BuildApkCommand.runCommand (package:flutter_tools/src/commands/build_apk.dart:141:5)
+<asynchronous suspension>
+#6      FlutterCommand.run.<anonymous closure> (package:flutter_tools/src/runner/flutter_command.dart:1408:27)
+<asynchronous suspension>
+#7      AppContext.run.<anonymous closure> (package:flutter_tools/src/base/context.dart:153:19)
+<asynchronous suspension>
+#8      CommandRunner.runCommand (package:args/command_runner.dart:212:13)
+<asynchronous suspension>
+#9      FlutterCommandRunner.runCommand.<anonymous closure> (package:flutter_tools/src/runner/flutter_command_runner.dart:420:9)
+<asynchronous suspension>
+#10     AppContext.run.<anonymous closure> (package:flutter_tools/src/base/context.dart:153:19)
+<asynchronous suspension>
+#11     FlutterCommandRunner.runCommand (package:flutter_tools/src/runner/flutter_command_runner.dart:364:5)
+<asynchronous suspension>
+#12     run.<anonymous closure>.<anonymous closure> (package:flutter_tools/runner.dart:130:9)
+<asynchronous suspension>
+#13     AppContext.run.<anonymous closure> (package:flutter_tools/src/base/context.dart:153:19)
+<asynchronous suspension>
+#14     main (package:flutter_tools/executable.dart:93:3)
+<asynchronous suspension>
+```
+
+## flutter doctor
+
+```
+[✓] Flutter (Channel stable, 3.24.5, on Debian GNU/Linux 13 (trixie) 5.10.134-013.5.kangaroo.al8.x86_64, locale en_US)
+    • Flutter version 3.24.5 on channel stable at /tmp/flutter
+    • Upstream repository https://github.com/flutter/flutter.git
+    • Framework revision dec2ee5c1f (1 year, 5 months ago), 2024-11-13 11:13:06 -0800
+    • Engine revision a18df97ca5
+    • Dart version 3.5.4
+    • DevTools version 2.37.3
+
+[!] Android toolchain - develop for Android devices (Android SDK version 34.0.0)
+    • Android SDK at /tmp/android-sdk
+    • Platform android-34, build-tools 34.0.0
+    • ANDROID_HOME = /tmp/android-sdk
+    • Java binary at: /usr/lib/jvm/java-21-openjdk-amd64/bin/java
+    • Java version OpenJDK Runtime Environment (build 21.0.10+7-Debian-1deb13u1)
+    ✗ Android license status unknown.
+      Run `flutter doctor --android-licenses` to accept the SDK licenses.
+      See https://flutter.dev/to/linux-android-setup for more details.
+
+[✗] Chrome - develop for the web (Cannot find Chrome executable at google-chrome)
+    ! Cannot find Chrome. Try setting CHROME_EXECUTABLE to a Chrome executable.
+
+[✗] Linux toolchain - develop for Linux desktop
+    ✗ clang++ is required for Linux development.
+      It is likely available from your distribution (e.g.: apt install clang), or can be downloaded from https://releases.llvm.org/
+    ✗ CMake is required for Linux development.
+      It is likely available from your distribution (e.g.: apt install cmake), or can be downloaded from https://cmake.org/download/
+    ✗ ninja is required for Linux development.
+      It is likely available from your distribution (e.g.: apt install ninja-build), or can be downloaded from https://github.com/ninja-build/ninja/releases
+    • pkg-config version 1.8.1
+    ✗ GTK 3.0 development libraries are required for Linux development.
+      They are likely available from your distribution (e.g.: apt install libgtk-3-dev)
+
+[!] Android Studio (not installed)
+    • Android Studio not found; download from https://developer.android.com/studio/index.html
+      (or visit https://flutter.dev/to/linux-android-setup for detailed instructions).
+
+[✓] Connected device (1 available)
+    • Linux (desktop) • linux • linux-x64 • Debian GNU/Linux 13 (trixie) 5.10.134-013.5.kangaroo.al8.x86_64
+
+[✓] Network resources
+    • All expected network resources are available.
+
+! Doctor found issues in 4 categories.
+```

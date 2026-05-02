@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - Photo Recover</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #f4f5f9;
+            color: #1a1a2e;
+            line-height: 1.7;
+        }
+        .header {
+            background: linear-gradient(135deg, #6C63FF 0%, #8B83FF 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .header h1 { font-size: 28px; margin-bottom: 8px; }
+        .header p { opacity: 0.9; font-size: 14px; }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px 20px 60px;
+        }
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        .card h2 {
+            font-size: 18px;
+            color: #6C63FF;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .card h2 .num {
+            background: #6C63FF;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .card p, .card li {
+            font-size: 14px;
+            color: #444;
+            margin-bottom: 10px;
+        }
+        .card ul {
+            padding-left: 20px;
+            margin-bottom: 12px;
+        }
+        .card li { margin-bottom: 6px; }
+        .badge {
+            display: inline-block;
+            background: #e8e7ff;
+            color: #6C63FF;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        a { color: #6C63FF; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .contact-box {
+            background: #f0eeff;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        .contact-box .email {
+            font-size: 18px;
+            font-weight: 700;
+            color: #6C63FF;
+            margin-top: 8px;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔒 Privacy Policy</h1>
+        <p>Photo Recover App &mdash; Last updated: April 3, 2026</p>
+    </div>
+
+    <div class="container">
+
+        <div class="card">
+            <h2><span class="num">1</span> Introduction</h2>
+            <p>Welcome to <strong>Photo Recover</strong> ("we", "our", or "the app"). We are committed to protecting your privacy and ensuring the security of your personal information. This Privacy Policy explains how we handle information when you use our Android application.</p>
+            <p><strong>App Name:</strong> Photo Recover<br>
+            <strong>Package ID:</strong> com.photoRecoverAI.photo_recover_ai<br>
+            <strong>Platform:</strong> Android<br>
+            <strong>Contact Email:</strong> <a href="mailto:saaddkhan99@gmail.com">saaddkhan99@gmail.com</a></p>
+            <p>By downloading, installing, or using the Photo Recover app, you agree to the terms outlined in this Privacy Policy. If you do not agree with any part of this policy, please uninstall and discontinue use of the application.</p>
+        </div>
+
+        <div class="card">
+            <h2><span class="num">2</span> Information We Collect</h2>
+            <span class="badge">🛡️ Minimal Data Collection</span>
+            <p>Photo Recover operates <strong>primarily offline</strong> and is designed to minimize data collection. Here is what we do and do not collect:</p>
+            <ul>
+                <li><strong>No Personal Information:</strong> We do NOT collect your name, email, phone number, address, or any personally identifiable information (PII).</li>
+                <li><strong>No Account Required:</strong> The app does not require user registration, sign-up, or login of any kind.</li>
+                <li><strong>No Server Communication for Files:</strong> Your photos, videos, and documents are NEVER uploaded, transmitted, or sent to any external server. All file scanning and recovery happens entirely on your device.</li>
+                <li><strong>No Location Data:</strong> We do not collect or track your GPS location.</li>
+                <li><strong>No Camera or Microphone Access:</strong> The app does not access your camera or microphone.</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2><span class="num">3</span> How We Use Your Information</h2>
+            <p>Since we do not collect personal data, there is minimal information usage. The app uses the following only for its core functionality:</p>
+            <ul>
+                <li><strong>File Scanning:</strong> The app reads file metadata (name, size, date, path) from your device storage to identify recoverable files. This data stays on your device.</li>
+                <li><strong>File Recovery:</strong> Recovered files are copied to a local "PhotoRecover" folder on your device. No files leave your phone.</li>
+                <li><strong>Local Database:</strong> The app uses a local SQLite database to store scan results and recovery records. This database is stored only on your device and is not shared externally.</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2><span class="num">4</span> Permissions Required</h2>
+            <p>Photo Recover requires the following Android permissions to function properly:</p>
+            <ul>
+                <li><strong>READ_EXTERNAL_STORAGE / MANAGE_EXTERNAL_STORAGE:</strong> Required to scan your device's directories for deleted or lost photos, videos, and files. Without this permission, the app cannot perform its primary function.</li>
+                <li><strong>WRITE_EXTERNAL_STORAGE:</strong> Required to save recovered files to the "PhotoRecover" folder on your device (Android 9 and below).</li>
+                <li><strong>READ_MEDIA_IMAGES / READ_MEDIA_VIDEO / READ_MEDIA_AUDIO:</strong> Required on Android 13+ to access media files for scanning and recovery.</li>
+                <li><strong>INTERNET / ACCESS_NETWORK_STATE:</strong> Required solely for displaying advertisements through Google AdMob. The app does not use internet access to send any user data.</li>
+            </ul>
+            <p>You can revoke these permissions at any time through your device's Settings &gt; Apps &gt; Photo Recover &gt; Permissions. Note that revoking storage permissions will prevent the app from scanning and recovering files.</p>
+        </div>
+
+        <div class="card">
+            <h2><span class="num">5</span> Third-Party Services</h2>
+            <span class="badge">📢 Google AdMob</span>
+            <p>Photo Recover uses <strong>Google AdMob</strong> to display advertisements within the app. AdMob may collect certain device information for advertising purposes, including but not limited to:</p>
+            <ul>
+                <li>Advertising ID (AAID)</li>
+                <li>Device model and manufacturer</li>
+                <li>Operating system version</li>
+                <li>Screen resolution and density</li>
+                <li>Network type (WiFi, cellular)</li>
+                <li>App version</li>
+            </ul>
+            <p>This data is collected by Google in accordance with <a href="https://policies.google.com/privacy" target="_blank">Google's Privacy Policy</a>. We do not control Google's data collection practices.</p>
+            <p><strong>How to opt out of personalized ads:</strong><br>
+            You can opt out of personalized advertising by following these steps:<br>
+            Android Settings &gt; Google &gt; Ads &gt; Delete advertising ID<br>
+            Or: Android Settings &gt; Privacy &gt; Ads &gt; Delete advertising ID</p>
+            <p>For more information about Google's advertising policies, visit:<br>
+            <a href="https://policies.google.com/technologies/ads" target="_blank">https://policies.google.com/technologies/ads</a></p>
+        </div>
+
+        <div class="card">
+            <h2><span class="num">6</span> Data Storage & Security</h2>
+            <p>All data processed by Photo Recover is stored <strong>locally on your device</strong>:</p>
+            <ul>
+                <li><strong>Scanned file records:</strong> Stored in a local SQLite database (photo_recover_ai.db)</li>
+                <li><strong>Recovered files:</strong> Saved to /storage/emulated/0/PhotoRecover/ folder</li>
+                <li><strong>No cloud storage:</strong> We do not use any cloud services, servers, or external databases</li>
+                <li><strong>No encryption needed:</strong> Since no data leaves your device, there is no risk of data interception during transmission</li>
+            </ul>
+            <p>When you uninstall Photo Recover, all local database records are removed automatically. Recovered files in the PhotoRecover folder will remain on your device unless you manually delete them.</p>
+        </div>
+
+        <div class="card">
+            <h2><span class="num">7</span> Children's Privacy</h2>
+            <p>Photo Recover is suitable for users of all ages. Since the app does not collect, store, or transmit any personal information from users of any age, we are fully compliant with the Children's Online Privacy Protection Act (COPPA) and other applicable children's privacy regulations.</p>
+            <p>There are no registration forms, chat features, or social sharing features that could expose children's information. The app's only function is local file recovery.</p>
+        </div>
+
+        <div class="card">
+            <h2><span class="num">8</span> Data Retention</h2>
+            <p>Photo Recover does not retain any user data beyond what is stored locally on your device:</p>
+            <ul>
+                <li><strong>Scan results:</strong> Stored locally until you perform a new scan (which clears previous results) or uninstall the app</li>
+                <li><strong>Recovery records:</strong> Stored locally until you clear them or uninstall the app</li>
+                <li><strong>Recovered files:</strong> Remain in the PhotoRecover folder until manually deleted by you</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2><span class="num">9</span> Third-Party Links</h2>
+            <p>The app may contain links to external websites (e.g., Google Play Store, email client). These links are provided for your convenience. We are not responsible for the content, privacy policies, or practices of any third-party websites or services. We encourage you to review the privacy policies of any external sites you visit.</p>
+        </div>
+
+        <div class="card">
+            <h2><span class="num">10</span> Changes to This Privacy Policy</h2>
+            <p>We may update this Privacy Policy from time to time to reflect changes in our practices, technology, legal requirements, or other factors. When we make changes, we will:</p>
+            <ul>
+                <li>Update the "Last updated" date at the top of this page</li>
+                <li>Update the in-app Privacy Policy screen</li>
+                <li>Continue to make the updated policy available through the in-app Settings</li>
+            </ul>
+            <p>Your continued use of the app after any changes constitutes your acceptance of the updated Privacy Policy. We recommend reviewing this page periodically for any updates.</p>
+        </div>
+
+        <div class="card">
+            <h2><span class="num">11</span> Your Rights</h2>
+            <p>Depending on your jurisdiction, you may have certain rights regarding your data, including:</p>
+            <ul>
+                <li><strong>Right to Access:</strong> You can view all scan results and recovery records within the app</li>
+                <li><strong>Right to Delete:</strong> You can delete scan results, recovery records, and recovered files at any time through the app</li>
+                <li><strong>Right to Revoke Permissions:</strong> You can revoke any app permissions through your device settings at any time</li>
+                <li><strong>Right to Uninstall:</strong> You can uninstall the app at any time, which removes all local data</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2><span class="num">12</span> Limitation of Liability</h2>
+            <p>Photo Recover is provided "as is" without any warranties, express or implied. While we strive to provide a reliable file recovery experience, we cannot guarantee that all deleted files can be recovered, as recovery depends on various factors including device storage management, file system conditions, and whether the original data has been overwritten.</p>
+        </div>
+
+        <div class="card">
+            <h2><span class="num">13</span> Contact Us</h2>
+            <p>If you have any questions, concerns, or requests regarding this Privacy Policy or our data practices, please do not hesitate to contact us:</p>
+            <div class="contact-box">
+                <p>📧 Email us at:</p>
+                <p class="email"><a href="mailto:saaddkhan99@gmail.com">saaddkhan99@gmail.com</a></p>
+                <p style="margin-top: 12px; font-size: 13px; color: #666;">We will respond to all privacy-related inquiries within 7 business days.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2026 Photo Recover. All rights reserved.</p>
+    </div>
+</body>
+</html>

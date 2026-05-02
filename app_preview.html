@@ -1,0 +1,1320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Photo Recover AI - App Preview</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .page-title {
+    color: white;
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
+  .page-subtitle {
+    color: rgba(255,255,255,0.7);
+    font-size: 14px;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+
+  .phone-frame {
+    width: 375px;
+    height: 812px;
+    background: #000;
+    border-radius: 50px;
+    padding: 12px;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.4), 0 0 0 2px #333, inset 0 0 0 2px #222;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .phone-notch {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 150px;
+    height: 30px;
+    background: #000;
+    border-radius: 0 0 20px 20px;
+    z-index: 1000;
+  }
+
+  .phone-screen {
+    width: 100%;
+    height: 100%;
+    border-radius: 40px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .screen {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.4s ease;
+    transform: translateX(30px);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .screen.active {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateX(0);
+  }
+
+  .screen::-webkit-scrollbar { display: none; }
+
+  /* Screen Navigation */
+  .nav-dots {
+    display: flex;
+    gap: 8px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 600px;
+  }
+
+  .nav-dot {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 2px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.1);
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .nav-dot:hover, .nav-dot.active {
+    background: white;
+    color: #6C63FF;
+    border-color: white;
+    transform: scale(1.05);
+  }
+
+  /* ===== SPLASH SCREEN ===== */
+  .splash-screen {
+    background: linear-gradient(135deg, #6C63FF, #8B83FF, #B8B0FF);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .splash-logo {
+    width: 120px; height: 120px;
+    background: white;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    animation: splashPulse 2s infinite;
+  }
+
+  @keyframes splashPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+
+  .splash-logo svg { width: 60px; height: 60px; }
+
+  .splash-title {
+    color: white;
+    font-size: 32px;
+    font-weight: 800;
+    margin-top: 32px;
+    letter-spacing: 1px;
+  }
+
+  .splash-tagline {
+    color: rgba(255,255,255,0.8);
+    font-size: 16px;
+    margin-top: 12px;
+  }
+
+  .splash-loader {
+    width: 40px; height: 40px;
+    border: 3px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-top: 60px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ===== HOME SCREEN ===== */
+  .home-screen { background: #F8F9FE; padding: 50px 20px 20px; }
+
+  .home-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 28px;
+  }
+
+  .home-brand { font-size: 28px; font-weight: 800; }
+  .home-brand span:first-child { color: #6C63FF; }
+  .home-brand span:last-child { color: #1A1A2E; }
+
+  .home-tagline { color: #6B7280; font-size: 14px; margin-top: 4px; }
+
+  .home-icon {
+    width: 48px; height: 48px;
+    background: linear-gradient(135deg, #6C63FF, #8B83FF);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 24px;
+  }
+
+  .section-title {
+    color: #1A1A2E;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+
+  .pro-banner {
+    background: linear-gradient(135deg, rgba(108,99,255,0.1), rgba(0,217,166,0.1));
+    border: 1px solid rgba(108,99,255,0.2);
+    border-radius: 20px;
+    padding: 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+
+  .pro-icon {
+    width: 48px; height: 48px;
+    background: linear-gradient(135deg, #6C63FF, #8B83FF);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .pro-text h3 { color: #6C63FF; font-size: 16px; font-weight: 700; }
+  .pro-text p { color: #6B7280; font-size: 12px; margin-top: 2px; }
+  .pro-btn {
+    margin-left: auto;
+    background: #6C63FF;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    flex-shrink: 0;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .recovery-card {
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 14px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+
+  .recovery-card:active { transform: scale(0.98); }
+
+  .card-photo { background: linear-gradient(135deg, #6C63FF, #8B83FF); box-shadow: 0 8px 25px rgba(108,99,255,0.35); }
+  .card-video { background: linear-gradient(135deg, #00D9A6, #00B4D8); box-shadow: 0 8px 25px rgba(0,217,166,0.35); }
+  .card-files { background: linear-gradient(135deg, #FF6B6B, #FF8E53); box-shadow: 0 8px 25px rgba(255,107,107,0.35); }
+
+  .card-icon {
+    width: 60px; height: 60px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    flex-shrink: 0;
+  }
+
+  .card-text h3 { font-size: 18px; font-weight: 700; }
+  .card-text p { font-size: 13px; opacity: 0.85; margin-top: 3px; }
+  .card-badge {
+    position: absolute;
+    top: 14px; right: 14px;
+    background: rgba(255,255,255,0.3);
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  .card-arrow {
+    margin-left: auto;
+    font-size: 20px;
+    opacity: 0.5;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .stat-card {
+    background: white;
+    border-radius: 16px;
+    padding: 16px;
+    text-align: center;
+    border: 1px solid #F0F0F5;
+  }
+
+  .stat-icon { font-size: 28px; margin-bottom: 8px; }
+  .stat-value { color: #1A1A2E; font-size: 20px; font-weight: 700; }
+  .stat-label { color: #6B7280; font-size: 12px; margin-top: 4px; }
+
+  .action-tile {
+    background: white;
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .action-tile:active { background: #F0F0F5; }
+
+  .action-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .action-text h4 { color: #1A1A2E; font-size: 15px; font-weight: 600; }
+  .action-text p { color: #6B7280; font-size: 12px; margin-top: 2px; }
+  .action-arrow { color: #9CA3AF; margin-left: auto; font-size: 18px; }
+
+  /* ===== SCAN SCREEN ===== */
+  .scan-screen {
+    background: #F8F9FE;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 50px 24px 20px;
+  }
+
+  .scan-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 40px;
+  }
+
+  .back-btn {
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; cursor: pointer;
+    border-radius: 12px;
+  }
+
+  .scan-title { font-size: 20px; font-weight: 700; color: #1A1A2E; }
+
+  .scan-icon-wrap {
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6C63FF, #8B83FF);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 10px 30px rgba(108,99,255,0.35);
+    animation: scanPulse 2s infinite;
+    margin-bottom: 32px;
+  }
+
+  @keyframes scanPulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 10px 30px rgba(108,99,255,0.35); }
+    50% { transform: scale(1.08); box-shadow: 0 15px 40px rgba(108,99,255,0.5); }
+  }
+
+  .scan-icon-wrap svg { width: 60px; height: 60px; color: white; }
+
+  .scan-status { font-size: 22px; font-weight: 700; color: #1A1A2E; text-align: center; }
+  .scan-folder { color: #6B7280; font-size: 14px; margin-top: 8px; }
+
+  .scan-counter {
+    background: rgba(108,99,255,0.1);
+    padding: 12px 24px;
+    border-radius: 30px;
+    margin-top: 32px;
+    display: flex; align-items: center; gap: 8px;
+    color: #6C63FF;
+    font-weight: 600;
+    font-size: 16px;
+  }
+
+  .progress-bar-wrap { width: 100%; margin-top: 24px; }
+
+  .progress-bar {
+    width: 100%;
+    height: 12px;
+    background: #F0F0F5;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #6C63FF, #8B83FF);
+    border-radius: 10px;
+    width: 68%;
+    animation: progressAnim 3s ease-in-out infinite;
+  }
+
+  @keyframes progressAnim {
+    0% { width: 20%; }
+    50% { width: 75%; }
+    100% { width: 68%; }
+  }
+
+  .progress-text { color: #6B7280; font-size: 13px; margin-top: 8px; text-align: center; }
+
+  .scan-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+    justify-content: center;
+  }
+
+  .scan-chip {
+    background: white;
+    border: 1px solid #F0F0F5;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 12px;
+    color: #6B7280;
+    display: flex; align-items: center; gap: 4px;
+  }
+
+  .scan-note {
+    color: #9CA3AF;
+    font-size: 12px;
+    text-align: center;
+    margin-top: auto;
+    margin-bottom: 20px;
+  }
+
+  /* ===== RESULTS SCREEN ===== */
+  .results-screen { background: #F8F9FE; }
+
+  .results-header {
+    background: #F8F9FE;
+    padding: 50px 12px 8px;
+    display: flex;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .results-title { font-size: 20px; font-weight: 700; color: #1A1A2E; flex: 1; }
+
+  .results-chips {
+    display: flex;
+    gap: 8px;
+    padding: 8px 16px;
+    overflow-x: auto;
+  }
+
+  .results-chips::-webkit-scrollbar { display: none; }
+
+  .result-chip {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    border: 1px solid #F0F0F5;
+    background: white;
+    color: #6B7280;
+  }
+
+  .result-chip.active {
+    background: #6C63FF;
+    color: white;
+    border-color: #6C63FF;
+    font-weight: 600;
+  }
+
+  .results-bar {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 16px;
+  }
+
+  .results-count { color: #6B7280; font-size: 13px; }
+  .results-sort { color: #6B7280; font-size: 12px; display: flex; align-items: center; gap: 4px; }
+
+  .photo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3px;
+    padding: 4px;
+  }
+
+  .photo-item {
+    aspect-ratio: 1;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+  }
+
+  .photo-item img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+
+  .photo-item .photo-placeholder {
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    font-size: 24px;
+  }
+
+  .photo-size {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    font-size: 10px;
+    text-align: center;
+    padding: 2px;
+  }
+
+  .results-bottom {
+    position: sticky;
+    bottom: 0;
+    background: white;
+    padding: 14px 16px;
+    box-shadow: 0 -5px 15px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .results-selected h4 { color: #1A1A2E; font-size: 16px; font-weight: 700; }
+  .results-selected p { color: #6B7280; font-size: 12px; }
+
+  .recover-btn {
+    background: linear-gradient(135deg, #6C63FF, #8B83FF);
+    color: white;
+    border: none;
+    padding: 14px 24px;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'Inter', sans-serif;
+    box-shadow: 0 5px 15px rgba(108,99,255,0.35);
+  }
+
+  /* ===== PREVIEW SCREEN ===== */
+  .preview-screen {
+    background: #000;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .preview-top {
+    padding: 50px 12px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    z-index: 5;
+  }
+
+  .preview-top span { color: white; flex: 1; font-size: 16px; font-weight: 600; }
+  .preview-top .icon-btn { color: white; font-size: 22px; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
+
+  .preview-image {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .preview-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .preview-actions {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+    padding: 40px 20px 30px;
+    display: flex;
+    justify-content: space-evenly;
+  }
+
+  .preview-action-btn {
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .preview-action-icon {
+    width: 52px; height: 52px;
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    margin-bottom: 6px;
+  }
+
+  .preview-action-label { color: white; font-size: 12px; font-weight: 500; }
+
+  .preview-info {
+    position: absolute;
+    bottom: 110px;
+    left: 16px; right: 16px;
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    z-index: 6;
+  }
+
+  .info-row { display: flex; gap: 10px; margin-bottom: 12px; align-items: flex-start; }
+  .info-row:last-child { margin-bottom: 0; }
+  .info-icon { color: #9CA3AF; font-size: 16px; flex-shrink: 0; margin-top: 2px; }
+  .info-label { color: #9CA3AF; font-size: 11px; }
+  .info-value { color: #1A1A2E; font-size: 13px; font-weight: 500; }
+
+  /* ===== RECOVERED FILES SCREEN ===== */
+  .recovered-screen { background: #F8F9FE; }
+
+  .recovered-header {
+    background: #F8F9FE;
+    padding: 50px 16px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .recovered-header h2 { font-size: 20px; font-weight: 700; color: #1A1A2E; }
+
+  .recovered-stats {
+    margin: 16px;
+    padding: 18px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #00D9A6, #00B4D8);
+    display: flex;
+    justify-content: space-around;
+    color: white;
+  }
+
+  .recovered-stat h3 { font-size: 20px; font-weight: 700; }
+  .recovered-stat p { font-size: 12px; opacity: 0.8; }
+
+  .recovered-tabs {
+    display: flex;
+    margin: 0 16px;
+    background: #F0F0F5;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .recovered-tab {
+    flex: 1;
+    padding: 12px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: #6B7280;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .recovered-tab.active {
+    background: #6C63FF;
+    color: white;
+    border-radius: 12px;
+  }
+
+  .recovered-list { padding: 16px; }
+
+  .recovered-item {
+    background: white;
+    border-radius: 16px;
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+    border: 1px solid #F0F0F5;
+  }
+
+  .recovered-item-icon {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+
+  .recovered-item-info { flex: 1; }
+  .recovered-item-info h4 { color: #1A1A2E; font-size: 14px; font-weight: 600; }
+  .recovered-item-info p { color: #6B7280; font-size: 11px; margin-top: 3px; }
+  .recovered-item-menu { color: #9CA3AF; font-size: 20px; cursor: pointer; }
+
+  /* ===== SETTINGS SCREEN ===== */
+  .settings-screen { background: #F8F9FE; padding: 50px 16px 20px; }
+
+  .settings-app-card {
+    padding: 20px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #6C63FF, #8B83FF);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+    color: white;
+  }
+
+  .settings-app-icon {
+    width: 56px; height: 56px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px;
+    flex-shrink: 0;
+  }
+
+  .settings-app-name { font-size: 20px; font-weight: 700; }
+  .settings-app-version { font-size: 13px; opacity: 0.7; margin-top: 3px; }
+
+  .settings-section-title {
+    color: #6B7280;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+    padding-left: 4px;
+  }
+
+  .settings-tile {
+    background: white;
+    border-radius: 14px;
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 4px;
+    cursor: pointer;
+  }
+
+  .settings-tile-icon {
+    width: 42px; height: 42px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .settings-tile-text h4 { color: #1A1A2E; font-size: 15px; font-weight: 600; }
+  .settings-tile-text p { color: #6B7280; font-size: 12px; margin-top: 2px; }
+
+  .toggle-switch {
+    width: 44px; height: 24px;
+    border-radius: 12px;
+    position: relative;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .toggle-switch.on { background: #6C63FF; }
+  .toggle-switch.off { background: #D1D5DB; }
+
+  .toggle-switch::after {
+    content: '';
+    position: absolute;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: white;
+    top: 2px;
+    transition: left 0.2s;
+  }
+
+  .toggle-switch.on::after { left: 22px; }
+  .toggle-switch.off::after { left: 2px; }
+
+  .settings-footer {
+    text-align: center;
+    color: #9CA3AF;
+    font-size: 12px;
+    margin-top: 28px;
+    padding-bottom: 20px;
+  }
+
+  .chevron { color: #9CA3AF; font-size: 18px; margin-left: auto; }
+
+  /* Responsive */
+  @media (max-width: 420px) {
+    .phone-frame {
+      width: 100%;
+      height: 100vh;
+      border-radius: 0;
+      padding: 0;
+    }
+    .phone-notch { display: none; }
+    .phone-screen { border-radius: 0; }
+    .page-title { display: none; }
+    .page-subtitle { display: none; }
+    .nav-dots { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-title">Photo Recover AI</div>
+<div class="page-subtitle">Interactive App Preview — Click below to navigate screens</div>
+
+<!-- Phone Frame -->
+<div class="phone-frame">
+  <div class="phone-notch"></div>
+  <div class="phone-screen">
+
+    <!-- ===== SCREEN 1: SPLASH ===== -->
+    <div class="screen active" id="screen-splash">
+      <div class="splash-screen">
+        <div class="splash-logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#6C63FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+            <path d="M3 3v5h5"/>
+            <path d="M12 7v5l4 2"/>
+          </svg>
+        </div>
+        <div class="splash-title">Photo Recover AI</div>
+        <div class="splash-tagline">Recover Your Deleted Memories</div>
+        <div class="splash-loader"></div>
+      </div>
+    </div>
+
+    <!-- ===== SCREEN 2: HOME ===== -->
+    <div class="screen" id="screen-home">
+      <div class="home-screen">
+        <div class="home-header">
+          <div>
+            <div class="home-brand"><span>Photo</span> <span>Recover AI</span></div>
+            <div class="home-tagline">Recover your deleted memories</div>
+          </div>
+          <div class="home-icon">✨</div>
+        </div>
+
+        <!-- Pro Banner -->
+        <div class="pro-banner">
+          <div class="pro-icon">💎</div>
+          <div class="pro-text">
+            <h3>Upgrade to Pro</h3>
+            <p>Remove ads & unlimited recovery</p>
+          </div>
+          <button class="pro-btn">Go Pro</button>
+        </div>
+
+        <!-- Recovery Cards -->
+        <div class="section-title">Recover Files</div>
+
+        <div class="recovery-card card-photo">
+          <div class="card-icon">🖼️</div>
+          <div class="card-text">
+            <h3>Recover Photos</h3>
+            <p>Find and restore deleted photos</p>
+          </div>
+          <div class="card-badge">Popular</div>
+          <div class="card-arrow">›</div>
+        </div>
+
+        <div class="recovery-card card-video">
+          <div class="card-icon">🎬</div>
+          <div class="card-text">
+            <h3>Recover Videos</h3>
+            <p>Scan and recover deleted videos</p>
+          </div>
+          <div class="card-arrow">›</div>
+        </div>
+
+        <div class="recovery-card card-files">
+          <div class="card-icon">📁</div>
+          <div class="card-text">
+            <h3>Recover Files</h3>
+            <p>Restore PDFs, docs & audio files</p>
+          </div>
+          <div class="card-arrow">›</div>
+        </div>
+
+        <!-- Stats -->
+        <div class="section-title" style="margin-top:28px">Recovery Stats</div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div class="stat-value">47</div>
+            <div class="stat-label">Recovered</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🖼️</div>
+            <div class="stat-value">238</div>
+            <div class="stat-label">Photos Found</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🎬</div>
+            <div class="stat-value">64</div>
+            <div class="stat-label">Videos Found</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📄</div>
+            <div class="stat-value">31</div>
+            <div class="stat-label">Files Found</div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="section-title">Quick Actions</div>
+
+        <div class="action-tile">
+          <div class="action-icon" style="background:rgba(108,99,255,0.1)">🔄</div>
+          <div class="action-text">
+            <h4>Recovered Files</h4>
+            <p>View all recovered files</p>
+          </div>
+          <div class="action-arrow">›</div>
+        </div>
+
+        <div class="action-tile">
+          <div class="action-icon" style="background:rgba(107,114,128,0.1)">⚙️</div>
+          <div class="action-text">
+            <h4>Settings</h4>
+            <p>App preferences & privacy</p>
+          </div>
+          <div class="action-arrow">›</div>
+        </div>
+
+        <div class="action-tile">
+          <div class="action-icon" style="background:rgba(0,217,166,0.1)">📤</div>
+          <div class="action-text">
+            <h4>Share App</h4>
+            <p>Tell your friends about us</p>
+          </div>
+          <div class="action-arrow">›</div>
+        </div>
+
+        <div class="action-tile">
+          <div class="action-icon" style="background:rgba(245,158,11,0.1)">⭐</div>
+          <div class="action-text">
+            <h4>Rate App</h4>
+            <p>Rate us on Play Store</p>
+          </div>
+          <div class="action-arrow">›</div>
+        </div>
+
+        <div style="height:20px"></div>
+      </div>
+    </div>
+
+    <!-- ===== SCREEN 3: SCANNING ===== -->
+    <div class="screen" id="screen-scan">
+      <div class="scan-screen">
+        <div class="scan-header">
+          <div class="back-btn">←</div>
+          <div class="scan-title">Scanning Photos</div>
+        </div>
+
+        <div class="scan-icon-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+            <path d="M3 3v5h5"/>
+            <path d="M12 7v5l4 2"/>
+          </svg>
+        </div>
+
+        <div class="scan-status">Scanning Photos...</div>
+        <div class="scan-folder">Scanning DCIM folder...</div>
+
+        <div class="scan-counter">
+          🔍 238 files found
+        </div>
+
+        <div class="progress-bar-wrap">
+          <div class="progress-bar">
+            <div class="progress-fill"></div>
+          </div>
+          <div class="progress-text">68%</div>
+        </div>
+
+        <div class="scan-chips">
+          <div class="scan-chip">📁 DCIM</div>
+          <div class="scan-chip">💬 WhatsApp</div>
+          <div class="scan-chip">🖼️ Pictures</div>
+          <div class="scan-chip">📥 Downloads</div>
+          <div class="scan-chip">🔒 Hidden</div>
+          <div class="scan-chip">🗂️ Cache</div>
+        </div>
+
+        <div class="scan-note">Please wait while scanning...\nDo not close the app.</div>
+      </div>
+    </div>
+
+    <!-- ===== SCREEN 4: SCAN RESULTS ===== -->
+    <div class="screen" id="screen-results">
+      <div class="results-screen">
+        <div class="results-header">
+          <div class="back-btn">←</div>
+          <div class="results-title">Scan Results</div>
+          <div class="icon-btn">☑️</div>
+        </div>
+
+        <div class="results-chips">
+          <div class="result-chip active">All</div>
+          <div class="result-chip">DCIM</div>
+          <div class="result-chip">WhatsApp</div>
+          <div class="result-chip">Pictures</div>
+          <div class="result-chip">Downloads</div>
+          <div class="result-chip">Cache</div>
+        </div>
+
+        <div class="results-bar">
+          <div class="results-count">238 Photos found</div>
+          <div class="results-sort">↓ Sort by date</div>
+        </div>
+
+        <div class="photo-grid">
+          <div class="photo-item"><div class="photo-placeholder" style="background:#E8E5FF">🌅</div><div class="photo-size">2.4 MB</div></div>
+          <div class="photo-item"><div class="photo-placeholder" style="background:#D1FAE5">🌿</div><div class="photo-size">1.8 MB</div></div>
+          <div class="photo-item"><div class="photo-placeholder" style="background:#FEE2E2">🎂</div><div class="photo-size">3.1 MB</div></div>
+          <div class="photo-item"><div class="photo-placeholder" style="background:#DBEAFE">🏖️</div><div class="photo-size">4.2 MB</div></div>
+          <div class="photo-item"><div class="photo-placeholder" style="background:#FEF3C7">🐱</div><div class="photo-size">2.0 MB</div></div>
+          <div class="photo-item"><div class="photo-placeholder" style="background:#E0E7FF">🏔️</div><div class="photo-size">5.6 MB</div></div>
+          <div class="photo-item"><div class="photo-placeholder" style="background:#FCE7F3">🌸</div><div class="photo-size">1.5 MB</div></div>
+          <div class="photo-item"><div class="photo-placeholder" style="background:#D1FAE5">🤳</div><div class="photo-size">3.3 MB</div></div>
+          <div class="photo-item"><div class="photo-placeholder" style="background:#FEE2E2">🔥</div><div class="photo-size">2.7 MB</div></div>
+          <div class="photo-item"><div class="photo-placeholder" style="background:#E8E5FF">🌙</div><div class="photo-size">1.9 MB</div></div>
+          <div class="photo-item"><div class="photo-placeholder" style="background:#DBEAFE">🐶</div><div class="photo-size">2.1 MB</div></div>
+          <div class="photo-item"><div class="photo-placeholder" style="background:#FEF3C7">🍕</div><div class="photo-size">1.4 MB</div></div>
+          <div class="photo-item"><div class="photo-placeholder" style="background:#D1FAE5">🌺</div><div class="photo-size">3.8 MB</div></div>
+          <div class="photo-item"><div class="photo-placeholder" style="background:#E0E7FF">🎮</div><div class="photo-size">2.5 MB</div></div>
+          <div class="photo-item"><div class="photo-placeholder" style="background:#FCE7F3">👗</div><div class="photo-size">1.7 MB</div></div>
+        </div>
+
+        <div class="results-bottom">
+          <div class="results-selected">
+            <h4>5 selected</h4>
+            <p>12.4 MB total</p>
+          </div>
+          <button class="recover-btn">🔄 Recover</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SCREEN 5: PREVIEW ===== -->
+    <div class="screen" id="screen-preview">
+      <div class="preview-screen">
+        <div class="preview-top">
+          <div class="icon-btn">←</div>
+          <span>sunset_beach_2024.jpg</span>
+          <div class="icon-btn">ℹ️</div>
+        </div>
+
+        <div class="preview-image" style="background:linear-gradient(180deg, #FF9A56 0%, #FF6B6B 30%, #6C63FF 70%, #2D1B69 100%)">
+          <div style="text-align:center;color:white;font-size:80px;margin-top:-40px">🌅</div>
+        </div>
+
+        <div class="preview-info">
+          <div class="info-row">
+            <div class="info-icon">📁</div>
+            <div><div class="info-label">Source</div><div class="info-value">DCIM</div></div>
+          </div>
+          <div class="info-row">
+            <div class="info-icon">📏</div>
+            <div><div class="info-label">Size</div><div class="info-value">2.4 MB</div></div>
+          </div>
+          <div class="info-row">
+            <div class="info-icon">🕐</div>
+            <div><div class="info-label">Modified</div><div class="info-value">15/03/2024 14:32</div></div>
+          </div>
+          <div class="info-row">
+            <div class="info-icon">📂</div>
+            <div><div class="info-label">Path</div><div class="info-value">/DCIM/Camera/sunset_beach_2024.jpg</div></div>
+          </div>
+        </div>
+
+        <div class="preview-actions">
+          <div class="preview-action-btn">
+            <div class="preview-action-icon" style="background:#6C63FF">🔄</div>
+            <div class="preview-action-label">Recover</div>
+          </div>
+          <div class="preview-action-btn">
+            <div class="preview-action-icon" style="background:#00D9A6">📤</div>
+            <div class="preview-action-label">Share</div>
+          </div>
+          <div class="preview-action-btn">
+            <div class="preview-action-icon" style="background:#F59E0B">ℹ️</div>
+            <div class="preview-action-label">Details</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SCREEN 6: RECOVERED FILES ===== -->
+    <div class="screen" id="screen-recovered">
+      <div class="recovered-screen">
+        <div class="recovered-header">
+          <div class="back-btn">←</div>
+          <h2>Recovered Files</h2>
+          <div class="icon-btn">🗑️</div>
+        </div>
+
+        <div class="recovered-stats">
+          <div class="recovered-stat">
+            <h3>47</h3>
+            <p>Total Files</p>
+          </div>
+          <div class="recovered-stat">
+            <h3>156 MB</h3>
+            <p>Total Size</p>
+          </div>
+        </div>
+
+        <div class="recovered-tabs">
+          <div class="recovered-tab active">Photos</div>
+          <div class="recovered-tab">Videos</div>
+          <div class="recovered-tab">Files</div>
+        </div>
+
+        <div class="recovered-list">
+          <div class="recovered-item">
+            <div class="recovered-item-icon" style="background:rgba(16,185,129,0.1)">🖼️</div>
+            <div class="recovered-item-info">
+              <h4>sunset_beach_2024.jpg</h4>
+              <p>2.4 MB · 15/03/2024</p>
+            </div>
+            <div class="recovered-item-menu">⋮</div>
+          </div>
+          <div class="recovered-item">
+            <div class="recovered-item-icon" style="background:rgba(16,185,129,0.1)">🖼️</div>
+            <div class="recovered-item-info">
+              <h4>birthday_party_001.jpg</h4>
+              <p>3.1 MB · 10/02/2024</p>
+            </div>
+            <div class="recovered-item-menu">⋮</div>
+          </div>
+          <div class="recovered-item">
+            <div class="recovered-item-icon" style="background:rgba(16,185,129,0.1)">🖼️</div>
+            <div class="recovered-item-info">
+              <h4>cat_sleeping.png</h4>
+              <p>2.0 MB · 28/01/2024</p>
+            </div>
+            <div class="recovered-item-menu">⋮</div>
+          </div>
+          <div class="recovered-item">
+            <div class="recovered-item-icon" style="background:rgba(16,185,129,0.1)">🖼️</div>
+            <div class="recovered-item-info">
+              <h4>mountain_view.heic</h4>
+              <p>5.6 MB · 05/01/2024</p>
+            </div>
+            <div class="recovered-item-menu">⋮</div>
+          </div>
+          <div class="recovered-item">
+            <div class="recovered-item-icon" style="background:rgba(16,185,129,0.1)">🖼️</div>
+            <div class="recovered-item-info">
+              <h4>food_dinner_003.jpg</h4>
+              <p>1.4 MB · 22/12/2023</p>
+            </div>
+            <div class="recovered-item-menu">⋮</div>
+          </div>
+          <div class="recovered-item">
+            <div class="recovered-item-icon" style="background:rgba(16,185,129,0.1)">🖼️</div>
+            <div class="recovered-item-info">
+              <h4>selfie_morning.webp</h4>
+              <p>1.9 MB · 15/12/2023</p>
+            </div>
+            <div class="recovered-item-menu">⋮</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SCREEN 7: SETTINGS ===== -->
+    <div class="screen" id="screen-settings">
+      <div class="settings-screen">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:24px">
+          <div class="back-btn">←</div>
+          <h2 style="font-size:20px;font-weight:700;color:#1A1A2E">Settings</h2>
+        </div>
+
+        <div class="settings-app-card">
+          <div class="settings-app-icon">🔄</div>
+          <div>
+            <div class="settings-app-name">Photo Recover AI</div>
+            <div class="settings-app-version">Version 1.0.0</div>
+          </div>
+        </div>
+
+        <div class="settings-section-title">General</div>
+
+        <div class="settings-tile">
+          <div class="settings-tile-icon" style="background:rgba(108,99,255,0.1)">🔔</div>
+          <div class="settings-tile-text"><h4>Notifications</h4><p>Get notified about recovery results</p></div>
+          <div class="toggle-switch on"></div>
+        </div>
+
+        <div class="settings-tile">
+          <div class="settings-tile-icon" style="background:rgba(99,102,241,0.1)">🌙</div>
+          <div class="settings-tile-text"><h4>Dark Mode</h4><p>Switch to dark theme</p></div>
+          <div class="toggle-switch off"></div>
+        </div>
+
+        <div class="settings-tile">
+          <div class="settings-tile-icon" style="background:rgba(0,217,166,0.1)">✨</div>
+          <div class="settings-tile-text"><h4>Auto Scan</h4><p>Automatically scan for new deleted files</p></div>
+          <div class="toggle-switch off"></div>
+        </div>
+
+        <div class="settings-section-title" style="margin-top:24px">Storage</div>
+
+        <div class="settings-tile">
+          <div class="settings-tile-icon" style="background:rgba(245,158,11,0.1)">📁</div>
+          <div class="settings-tile-text"><h4>Recovery Folder</h4><p>/storage/emulated/0/PhotoRecoverAI</p></div>
+          <div class="chevron">›</div>
+        </div>
+
+        <div class="settings-tile">
+          <div class="settings-tile-icon" style="background:rgba(239,68,68,0.1)">🧹</div>
+          <div class="settings-tile-text"><h4>Clear Cache</h4><p>Clear scan cache and temporary data</p></div>
+          <div class="chevron">›</div>
+        </div>
+
+        <div class="settings-section-title" style="margin-top:24px">About</div>
+
+        <div class="settings-tile">
+          <div class="settings-tile-icon" style="background:rgba(16,185,129,0.1)">🛡️</div>
+          <div class="settings-tile-text"><h4>Privacy Policy</h4><p>How we handle your data</p></div>
+          <div class="chevron">↗</div>
+        </div>
+
+        <div class="settings-tile">
+          <div class="settings-tile-icon" style="background:rgba(59,130,246,0.1)">📄</div>
+          <div class="settings-tile-text"><h4>Terms of Service</h4><p>App usage terms</p></div>
+          <div class="chevron">↗</div>
+        </div>
+
+        <div class="settings-tile">
+          <div class="settings-tile-icon" style="background:rgba(245,158,11,0.1)">⭐</div>
+          <div class="settings-tile-text"><h4>Rate App</h4><p>Rate us on Google Play Store</p></div>
+          <div class="chevron">↗</div>
+        </div>
+
+        <div class="settings-tile">
+          <div class="settings-tile-icon" style="background:rgba(108,99,255,0.1)">📤</div>
+          <div class="settings-tile-text"><h4>Share App</h4><p>Tell your friends about Photo Recover AI</p></div>
+          <div class="chevron">›</div>
+        </div>
+
+        <div class="settings-tile">
+          <div class="settings-tile-icon" style="background:rgba(239,68,68,0.1)">📧</div>
+          <div class="settings-tile-text"><h4>Contact Support</h4><p>support@photorecoverai.app</p></div>
+          <div class="chevron">↗</div>
+        </div>
+
+        <div class="settings-footer">
+          Photo Recover AI v1.0.0<br>Made with ❤️
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Navigation Buttons -->
+<div class="nav-dots">
+  <button class="nav-dot active" onclick="showScreen('splash')">🏠 Splash</button>
+  <button class="nav-dot" onclick="showScreen('home')">📱 Home</button>
+  <button class="nav-dot" onclick="showScreen('scan')">🔍 Scanning</button>
+  <button class="nav-dot" onclick="showScreen('results')">📸 Results</button>
+  <button class="nav-dot" onclick="showScreen('preview')">👁️ Preview</button>
+  <button class="nav-dot" onclick="showScreen('recovered')">♻️ Recovered</button>
+  <button class="nav-dot" onclick="showScreen('settings')">⚙️ Settings</button>
+</div>
+
+<script>
+  function showScreen(name) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-dot').forEach(d => d.classList.remove('active'));
+    document.getElementById('screen-' + name).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  // Auto-advance from splash to home after 3 seconds on first load
+  let autoAdvanced = false;
+  setTimeout(() => {
+    if (!autoAdvanced) {
+      showScreenDirect('home');
+      autoAdvanced = true;
+    }
+  }, 3000);
+
+  function showScreenDirect(name) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-dot').forEach(d => d.classList.remove('active'));
+    document.getElementById('screen-' + name).classList.add('active');
+    document.querySelectorAll('.nav-dot').forEach(d => {
+      if (d.textContent.toLowerCase().includes(name.substring(0,4))) {
+        d.classList.add('active');
+      }
+    });
+  }
+</script>
+
+</body>
+</html>
