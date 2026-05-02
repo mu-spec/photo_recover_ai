@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import '../main.dart';
 import '../models/recoverable_file.dart';
 import '../services/storage_scanner.dart';
-import '../services/database_helper.dart';
 import '../services/file_analyzer.dart';
 import '../services/recovery_insights_service.dart';
 import '../utils/app_theme.dart';
@@ -30,7 +29,6 @@ class ScanResultsScreen extends StatefulWidget {
 class _ScanResultsScreenState extends State<ScanResultsScreen>
     with TickerProviderStateMixin {
   final RecoveryService _recoveryService = RecoveryService();
-  final DatabaseHelper _db = DatabaseHelper.instance;
   final RecoveryInsightsService _insights = RecoveryInsightsService();
 
   List<RecoverableFile> _displayedFiles = [];
@@ -310,21 +308,6 @@ class _ScanResultsScreenState extends State<ScanResultsScreen>
             recovered++;
             totalSize += file.size;
             recoveredNames.add(file.name);
-            try {
-              await _db.insertRecoveryRecord(
-                RecoveryRecord(
-                  id: DateTime.now().millisecondsSinceEpoch.toString() + i.toString(),
-                  fileName: file.name,
-                  originalPath: file.path,
-                  recoveredPath: newPath,
-                  fileType: widget.fileType,
-                  recoveredAt: DateTime.now(),
-                  fileSize: file.size,
-                ),
-              );
-            } catch (_) {
-              // DB insert failed, but file was recovered - continue
-            }
           }
         } catch (_) {
           // Single file recovery failed - continue with next
