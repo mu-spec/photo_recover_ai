@@ -15,6 +15,7 @@ class AdService {
   bool _isBannerLoaded = false;
   InterstitialAd? _interstitialAd;
   bool _isInterstitialLoaded = false;
+  bool _isShowingInterstitial = false;
   bool _isInitialized = false;
 
   Future<void> initialize() async {
@@ -96,6 +97,7 @@ class AdService {
           ad.fullScreenContentCallback = FullScreenContentCallback(
             onAdDismissedFullScreenContent: (ad) {
               debugPrint('Interstitial ad dismissed');
+              _isShowingInterstitial = false;
               ad.dispose();
               _interstitialAd = null;
               _isInterstitialLoaded = false;
@@ -103,6 +105,7 @@ class AdService {
             },
             onAdFailedToShowFullScreenContent: (ad, error) {
               debugPrint('Interstitial ad failed to show: ${error.message}');
+              _isShowingInterstitial = false;
               ad.dispose();
               _interstitialAd = null;
               _isInterstitialLoaded = false;
@@ -119,12 +122,29 @@ class AdService {
   }
 
   Future<void> showInterstitialAd() async {
-    if (_interstitialAd != null && _isInterstitialLoaded) {
-      await _interstitialAd!.show();
-      _isInterstitialLoaded = false;
-    } else {
+    if (_isShowingInterstitial) {
+      debugPrint('Interstitial is already showing, skipping duplicate request.');
+      return;
+    }
+
+    if (_interstitialAd == null || !_isInterstitialLoaded) {
       debugPrint('Interstitial ad not ready, loading...');
       loadInterstitialAd();
+      return;
+    }
+
+    try {
+      _isShowingInterstitial = true;
+      await _interstitialAd!.show();
+      _isInterstitialLoaded = false;
+    } catch (e) {
+      debugPrint('Interstitial show error: $e');
+      _isInterstitialLoaded = false;
+      _interstitialAd?.dispose();
+      _interstitialAd = null;
+      loadInterstitialAd();
+    } finally {
+      _isShowingInterstitial = false;
     }
   }
 
@@ -135,5 +155,6 @@ class AdService {
     _interstitialAd = null;
     _isBannerLoaded = false;
     _isInterstitialLoaded = false;
+    _isShowingInterstitial = false;
   }
 }
