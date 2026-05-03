@@ -209,7 +209,7 @@ class _ScanScreenState extends State<ScanScreen> with TickerProviderStateMixin {
       _isScanning = false;
       _isPaused = false;
       _isComplete = true;
-      _currentFolder = 'Complete';
+      _currentFolder = 'Scan finished';
       _status = 'Found ${finalResults.length} ${_typeLabel}!';
       _foundFiles = finalResults;
     });
