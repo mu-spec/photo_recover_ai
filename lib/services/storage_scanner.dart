@@ -332,8 +332,8 @@ class StorageScanner {
     'KakaoTalk', 'LINE', 'WeChat',
   ];
 
-  // ===== MASSIVELY EXPANDED APP MEDIA CACHE PATHS =====
-  static const appMediaCachePaths = [
+  // ===== CORE APP MEDIA CACHE PATHS =====
+  static const appMediaCorePaths = [
     // Messaging apps
     'Android/data/com.whatsapp',
     'Android/data/com.whatsapp.w4b',
@@ -415,6 +415,55 @@ class StorageScanner {
     'Android/data/com.disney.disneyplus',    // Disney+
   ];
 
+  // Additional package universe to generate 500+ realistic scan paths.
+  static const _highPriorityPackageIds = [
+    'com.whatsapp', 'com.whatsapp.w4b', 'org.telegram.messenger', 'com.instagram.android',
+    'com.zhiliaoapp.musically', 'com.ss.android.ugc.aweme', 'com.facebook.katana',
+    'com.facebook.orca', 'com.snapchat.android', 'com.tencent.mm', 'jp.naver.line.android',
+    'org.thoughtcrime.securesms', 'com.viber.voip', 'com.discord', 'com.reddit.frontpage',
+    'com.twitter.android', 'com.pinterest', 'com.linkedin.android', 'com.kakao.talk',
+    'com.sina.weibo', 'com.tencent.mobileqq', 'com.zalo.zalo3', 'com.google.android.apps.photos',
+    'com.google.android.apps.docs', 'com.dropbox.android', 'com.microsoft.skydrive',
+    'com.google.android.apps.nbu.files', 'com.estrongs.android.pop', 'com.xender', 'com.shareit',
+    'org.videolan.vlc', 'com.mxtech.videoplayer.ad', 'com.mxtech.videoplayer.pro', 'com.kmplayer',
+    'com.google.android.youtube', 'com.google.android.apps.youtube.music', 'com.spotify.music',
+    'com.netflix.mediaclient', 'com.disney.disneyplus', 'com.amazon.avod.thirdpartyclient',
+    'com.android.chrome', 'org.mozilla.firefox', 'com.opera.browser', 'com.opera.mini.native',
+    'com.sec.android.app.sbrowser', 'com.brave.browser', 'com.microsoft.emmx',
+    'com.UCMobile.intl', 'org.chromium.chrome', 'com.google.android.gm',
+    'com.android.vending', 'com.google.android.apps.maps', 'com.google.android.keep',
+    'com.adobe.lrmobile', 'com.canva.editor', 'com.burbn.instagram', 'com.google.android.apps.tachyon',
+    'com.skype.raider', 'com.zoom.us', 'com.microsoft.teams', 'com.slack',
+    'com.google.android.calendar', 'com.google.android.contacts', 'com.google.android.music',
+    'com.google.android.videos', 'com.samsung.android.messaging', 'com.google.android.apps.messaging',
+    'com.android.mms', 'com.google.android.apps.translate', 'com.google.android.apps.docs.editors.docs',
+    'com.google.android.apps.docs.editors.sheets', 'com.google.android.apps.docs.editors.slides',
+    'com.miui.gallery', 'com.huawei.himovie', 'com.viva.video', 'com.nexstreaming.app.jellyvideomaker',
+    'com.zideate', 'com.camscanner.app', 'com.amazon.mShop.android.shopping',
+    'com.paypal.android.p2pmobile', 'com.binance.dev', 'com.bybit.app', 'com.coinbase.android',
+    'com.roblox.client', 'com.supercell.clashofclans', 'com.supercell.clashroyale',
+    'com.dts.freefireth', 'com.ea.gp.fifamobile', 'com.mobile.legends', 'com.activision.callofduty.shooter',
+    'com.epicgames.fortnite', 'com.nianticlabs.pokemongo', 'com.king.candycrushsaga',
+    'com.ubercab', 'com.ubercab.eats', 'com.olacabs.customer', 'com.booking', 'com.airbnb.android',
+    'com.tripadvisor.tripadvisor', 'com.agoda.mobile.consumer', 'com.tinder', 'com.bumble.app',
+    'com.quora.android', 'com.medium.reader', 'com.flipboard.app', 'com.naver.linewebtoon',
+    'com.nono.android', 'com.picsart.studio', 'com.prisma.photoeditor', 'com.snowcorp.stickerly.android',
+    'com.capcut.videoeditor', 'video.editor.videomaker.effects.fx', 'com.cyberlink.powerdirector.DRA140225_01',
+    'com.adobe.psmobile', 'com.google.android.apps.walletnfcrel',
+  ];
+
+  static const _generatedPathSuffixes = [
+    '',
+    '/cache',
+    '/cache/image_manager_disk_cache',
+    '/cache/video',
+    '/files',
+    '/files/Pictures',
+    '/files/Movies',
+  ];
+
+  static final List<String> appMediaCachePaths = _buildExpandedAppMediaCachePaths();
+
   // ===== THUMBNAIL / HIDDEN / TRASH PATHS =====
   static const thumbnailPaths = [
     'DCIM/.thumbnails',
@@ -461,6 +510,37 @@ class StorageScanner {
   static const int fileStatDelay = 3;        // ms
   static const int folderTransitionDelay = 120; // ms
   static const int batchSize = 30;           // files per batch before yield
+
+  static List<String> _buildExpandedAppMediaCachePaths() {
+    final paths = <String>{...appMediaCorePaths};
+
+    for (final pkg in _highPriorityPackageIds) {
+      for (final suffix in _generatedPathSuffixes) {
+        paths.add('Android/data/$pkg$suffix');
+      }
+
+      // Scoped storage media variants.
+      paths.add('Android/media/$pkg');
+      paths.add('Android/media/$pkg/files');
+      paths.add('Android/media/$pkg/Media');
+      paths.add('Android/media/$pkg/Media/.Statuses');
+    }
+
+    // Generic hot spots frequently containing residual media/caches.
+    paths.addAll(const [
+      'Android/data',
+      'Android/media',
+      'Android/obb',
+      'DCIM/.thumbnails',
+      'Pictures/.thumbnails',
+      'Download',
+      'Downloads',
+      'WhatsApp/Media',
+      'Telegram',
+    ]);
+
+    return paths.toList(growable: false);
+  }
 
   // ===== STATE =====
   bool _isCancelled = false;
@@ -766,7 +846,9 @@ class StorageScanner {
       // ================================================================
       yield ScanProgress(
         progress: 0.36, currentFolder: 'App Caches', filesFound: allFiles.length,
-        status: isDeepScan ? 'Deep scanning 70+ app media caches...' : 'Scanning app caches...',
+        status: isDeepScan
+            ? 'Deep scanning ${appMediaCachePaths.length}+ app/media cache paths...'
+            : 'Scanning app caches...',
         phase: 'cache_scan', totalScanned: scannedPaths.length,
         folderCount: totalDirsScanned, totalBytesScanned: totalBytes,
         storageLocations: locIndex + 1, signaturesMatched: _signaturesMatched,
@@ -2146,5 +2228,3 @@ class RecoveryService {
     }
   }
 }
-
-
