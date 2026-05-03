@@ -24,6 +24,8 @@ class AdService {
       await MobileAds.instance.initialize();
       _isInitialized = true;
       debugPrint('AdMob initialized successfully');
+      // Preload interstitial so first eligible action can show an ad reliably.
+      loadInterstitialAd();
     } catch (e) {
       debugPrint('AdMob initialization failed: $e');
     }

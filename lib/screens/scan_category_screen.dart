@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../main.dart';
 import '../utils/app_theme.dart';
 import '../utils/app_constants.dart';
 import '../widgets/common_widgets.dart';
@@ -145,10 +146,14 @@ class ScanCategoryScreen extends StatelessWidget {
   }
 
   void _navigateToScan(BuildContext context, bool scanDeleted) {
+    // Keep interstitial warm before user reaches scan start.
+    adService.loadInterstitialAd();
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => PermissionScreen(fileType: fileType)),
     ).then((permissionGranted) {
       if (permissionGranted == true && context.mounted) {
+        // Show an ad before starting scan flow.
+        adService.showInterstitialAd();
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (_) => ScanScreen(fileType: fileType, scanDeleted: scanDeleted),

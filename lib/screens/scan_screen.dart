@@ -216,6 +216,9 @@ class _ScanScreenState extends State<ScanScreen> with TickerProviderStateMixin {
 
     _checkController.forward();
 
+    // Show interstitial automatically when scan completes.
+    adService.showInterstitialAd();
+
     try {
       // Persist results before user returns to Home stats, so counters refresh correctly.
       await _db.insertScanResults(finalResults);
@@ -829,4 +832,3 @@ class _ScanLogEntry {
   final int timestamp;
   _ScanLogEntry({required this.folder, required this.filesInFolder, required this.timestamp});
 }
-
