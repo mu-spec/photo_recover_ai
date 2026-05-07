@@ -18,7 +18,7 @@ class _PermissionScreenState extends State<PermissionScreen> {
     setState(() => _isRequesting = true);
 
     final scanner = StorageScanner();
-    final granted = await scanner.requestPermissions();
+    final granted = await scanner.requestPermissionsForType(widget.fileType);
 
     if (!mounted) return;
     setState(() => _isRequesting = false);
@@ -28,8 +28,10 @@ class _PermissionScreenState extends State<PermissionScreen> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text(
-            'Permission is required to scan and recover files.',
+          content: Text(
+            widget.fileType == 'file'
+                ? 'All files access is required to scan documents and general files.'
+                : 'Required media permission is missing. Please allow access and try again.',
           ),
           backgroundColor: AppTheme.warningColor,
           behavior: SnackBarBehavior.floating,

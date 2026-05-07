@@ -568,10 +568,24 @@ class StorageScanner {
 
   // ===== PERMISSIONS =====
   Future<bool> requestPermissions() async {
+    return requestPermissionsForType('photo');
+  }
+
+  Future<bool> requestPermissionsForType(String fileType) async {
     if (await _checkAndRequestPermission(Permission.manageExternalStorage)) return true;
     if (await _checkAndRequestPermission(Permission.storage)) return true;
-    final results = await [Permission.photos, Permission.videos, Permission.audio].request();
-    return results.values.any((status) => status.isGranted);
+
+    switch (fileType) {
+      case 'photo':
+        return await _checkAndRequestPermission(Permission.photos);
+      case 'video':
+        return await _checkAndRequestPermission(Permission.videos);
+      case 'file':
+      default:
+        // Generic files/documents are often outside media collections.
+        // Without broad storage access, recovery is unreliable.
+        return false;
+    }
   }
 
   Future<bool> _checkAndRequestPermission(Permission permission) async {
