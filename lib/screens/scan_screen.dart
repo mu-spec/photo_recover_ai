@@ -198,10 +198,38 @@ class _ScanScreenState extends State<ScanScreen> with TickerProviderStateMixin {
   Future<void> _handleScanComplete() async {
     if (_isComplete) return; // Prevent double-call
 
-    final finalResults = _scanner.lastScanResults;
+    var finalResults = _scanner.lastScanResults;
     _timerController?.cancel();
     _pulseController.stop();
     _radarController.stop();
+
+    // Fallback for strict deleted filter on OEMs where true deleted traces
+    // are inaccessible/over-filtered: provide likely recoverables instead of hard zero.
+    final shouldRunDeletedFallback = widget.scanDeleted &&
+        finalResults.isEmpty &&
+        (_totalScanned >= 2000 || _signaturesMatched >= 150);
+
+    if (shouldRunDeletedFallback) {
+      if (mounted) {
+        setState(() {
+          _status = 'No strict deleted matches. Finding possible recoverables...';
+          _currentFolder = 'Fallback analysis';
+          _phase = 'analysis';
+        });
+      }
+      final fallback = await _runDeletedFallbackCandidates();
+      if (fallback.isNotEmpty) {
+        finalResults = fallback;
+      }
+    }
+
+    final completionStatus = finalResults.isEmpty
+        ? (widget.scanDeleted
+            ? 'No recoverable deleted ${_typeLabel.toLowerCase()} found on this device right now.'
+            : 'Found 0 ${_typeLabel}.')
+        : (shouldRunDeletedFallback
+            ? 'Showing likely recoverables (${finalResults.length})'
+            : 'Found ${finalResults.length} ${_typeLabel}!');
 
     setState(() {
       _progress = 1.0;
@@ -210,7 +238,7 @@ class _ScanScreenState extends State<ScanScreen> with TickerProviderStateMixin {
       _isPaused = false;
       _isComplete = true;
       _currentFolder = 'Scan finished';
-      _status = 'Found ${finalResults.length} ${_typeLabel}!';
+      _status = completionStatus;
       _foundFiles = finalResults;
     });
 
@@ -232,6 +260,29 @@ class _ScanScreenState extends State<ScanScreen> with TickerProviderStateMixin {
     } catch (e) {
       debugPrint('Insights scan record error: $e');
     }
+  }
+
+  Future<List<RecoverableFile>> _runDeletedFallbackCandidates() async {
+    Stream<ScanProgress> fallbackStream;
+    switch (widget.fileType) {
+      case 'photo':
+        fallbackStream = _scanner.scanAllPhotos();
+        break;
+      case 'video':
+        fallbackStream = _scanner.scanAllVideos();
+        break;
+      default:
+        fallbackStream = _scanner.scanAllFiles();
+        break;
+    }
+
+    await for (final _ in fallbackStream) {
+      if (_isCancelled) break;
+    }
+
+    final candidates = _scanner.lastScanResults;
+    if (candidates.isEmpty) return [];
+    return candidates.take(300).toList();
   }
 
   void _cancelScan() {
