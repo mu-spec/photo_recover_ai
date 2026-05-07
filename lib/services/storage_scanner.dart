@@ -1292,9 +1292,44 @@ class StorageScanner {
       );
       await Future.delayed(const Duration(milliseconds: 400));
 
+      final preFilterCandidates = List<RecoverableFile>.from(allFiles);
       final beforeFilter = allFiles.length;
       allFiles.removeWhere((f) => _isLikelyExistingFile(f, fileType));
       final removed = beforeFilter - allFiles.length;
+
+      // Cross-device fallback:
+      // Some OEM ROMs expose deleted traces in unusual locations that can be
+      // over-filtered by strict existing-file heuristics.
+      if (allFiles.isEmpty && (scannedPaths.length > 5000 || _signaturesMatched > 200)) {
+        final fallback = preFilterCandidates.where((f) {
+          final p = f.path.toLowerCase();
+          final src = f.source.toLowerCase();
+          final ext = f.extension.toLowerCase();
+          final isValidTypeExt = fileType == 'photo'
+              ? photoExtensions.contains(ext)
+              : fileType == 'video'
+                  ? videoExtensions.contains(ext)
+                  : [...documentExtensions, ...audioExtensions].contains(ext);
+          if (!isValidTypeExt) return false;
+          if (f.size <= minFileSize) return false;
+
+          return p.contains('/android/media/') ||
+              p.contains('/android/data/') ||
+              p.contains('/cache/') ||
+              p.contains('/.thumbnails') ||
+              p.contains('/trash') ||
+              p.contains('/recently') ||
+              src.contains('hidden') ||
+              src.contains('cache') ||
+              src.contains('other');
+        }).take(400).toList();
+
+        if (fallback.isNotEmpty) {
+          allFiles
+            ..clear()
+            ..addAll(fallback);
+        }
+      }
 
       yield ScanProgress(
         progress: 0.93, currentFolder: 'Filtered', filesFound: allFiles.length,
@@ -1883,6 +1918,12 @@ class StorageScanner {
 
     // Keep files in cache paths
     if (_isCachePath(f.path)) return false;
+
+    // On several OEM ROMs, deleted or stale media remnants remain under
+    // Android/media with normal-looking paths; don't classify too aggressively.
+    if (f.path.contains('/Android/media/') || f.path.contains('/android/media/')) {
+      return false;
+    }
 
     // Keep files in trash/recently-deleted paths
     for (final trashPath in deletedTracePaths) {
