@@ -25,6 +25,7 @@ void main() async {
 
   // Initialize Google Mobile Ads
   await adService.initialize();
+  adService.loadBannerAd();
 
   runApp(
     ChangeNotifierProvider(
@@ -99,6 +100,14 @@ class PhotoRecoverApp extends StatelessWidget {
     return MaterialApp(
       title: 'Photo Recover',
       debugShowCheckedModeBanner: false,
+      builder: (context, child) {
+        return Column(
+          children: [
+            Expanded(child: child ?? const SizedBox.shrink()),
+            adService.buildBannerContainer(),
+          ],
+        );
+      },
       theme: _buildLightTheme(),
       darkTheme: _buildDarkTheme(),
       themeMode: isDark ? ThemeMode.dark : ThemeMode.light,

@@ -331,8 +331,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         ),
-        // Banner ad at bottom
-        adService.buildBannerContainer(),
       ],
     );
   }

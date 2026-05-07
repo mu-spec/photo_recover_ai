@@ -383,8 +383,6 @@ class _ScanResultsScreenState extends State<ScanResultsScreen>
       body: SafeArea(
         child: Column(
           children: [
-            // Banner ad at top of results
-            adService.buildBannerContainer(),
             // Header
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
@@ -775,12 +773,6 @@ class _ScanResultsScreenState extends State<ScanResultsScreen>
           ],
         ),
       ),
-      bottomNavigationBar: _selectedIndices.isNotEmpty
-          ? null
-          : SizedBox(
-              height: 60,
-              child: Center(child: adService.getBannerAdWidget()),
-            ),
     );
   }
 
