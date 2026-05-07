@@ -36,6 +36,8 @@ class _ScanScreenState extends State<ScanScreen> with TickerProviderStateMixin {
   bool _isCancelled = false;
   bool _isPaused = false;
   List<RecoverableFile> _foundFiles = [];
+  List<RecoverableFile> _strictDeletedFiles = [];
+  List<RecoverableFile> _possibleDeletedFiles = [];
   bool _isComplete = false;
   int _totalScanned = 0;
   int _elapsedSeconds = 0;
@@ -198,7 +200,8 @@ class _ScanScreenState extends State<ScanScreen> with TickerProviderStateMixin {
   Future<void> _handleScanComplete() async {
     if (_isComplete) return; // Prevent double-call
 
-    var finalResults = _scanner.lastScanResults;
+    final strictResults = List<RecoverableFile>.from(_scanner.lastScanResults);
+    var finalResults = List<RecoverableFile>.from(strictResults);
     _timerController?.cancel();
     _pulseController.stop();
     _radarController.stop();
@@ -240,6 +243,8 @@ class _ScanScreenState extends State<ScanScreen> with TickerProviderStateMixin {
       _currentFolder = 'Scan finished';
       _status = completionStatus;
       _foundFiles = finalResults;
+      _strictDeletedFiles = strictResults;
+      _possibleDeletedFiles = shouldRunDeletedFallback ? finalResults : [];
     });
 
     _checkController.forward();
@@ -792,7 +797,13 @@ class _ScanScreenState extends State<ScanScreen> with TickerProviderStateMixin {
                 onPressed: () {
                   Navigator.of(context).pushReplacement(
                     MaterialPageRoute(
-                      builder: (_) => ScanResultsScreen(fileType: widget.fileType, files: _foundFiles),
+                      builder: (_) => ScanResultsScreen(
+                        fileType: widget.fileType,
+                        files: _foundFiles,
+                        isDeletedScan: widget.scanDeleted,
+                        strictDeletedFiles: _strictDeletedFiles,
+                        possibleDeletedFiles: _possibleDeletedFiles,
+                      ),
                     ),
                   );
                   // Show interstitial ad after navigation completes

@@ -15,11 +15,17 @@ import 'file_detail_screen.dart';
 class ScanResultsScreen extends StatefulWidget {
   final String fileType;
   final List<RecoverableFile> files;
+  final bool isDeletedScan;
+  final List<RecoverableFile>? strictDeletedFiles;
+  final List<RecoverableFile>? possibleDeletedFiles;
 
   const ScanResultsScreen({
     super.key,
     required this.fileType,
     required this.files,
+    this.isDeletedScan = false,
+    this.strictDeletedFiles,
+    this.possibleDeletedFiles,
   });
 
   @override
@@ -32,12 +38,14 @@ class _ScanResultsScreenState extends State<ScanResultsScreen>
   final RecoveryInsightsService _insights = RecoveryInsightsService();
 
   List<RecoverableFile> _displayedFiles = [];
+  List<RecoverableFile> _activeSourceFiles = [];
   final Set<int> _selectedIndices = {};
   String _sortBy = 'date';
   String _filterSource = 'All';
   String _filterQuality = 'All Quality';
   bool _filterLargeFiles = false;
   bool _showDuplicates = false;
+  bool _showPossibleDeleted = false;
   bool _isSelectMode = false;
   bool _isRecovering = false;
   int _recoveredCount = 0;
@@ -55,12 +63,14 @@ class _ScanResultsScreenState extends State<ScanResultsScreen>
   @override
   void initState() {
     super.initState();
-    _displayedFiles = List.from(widget.files);
+    final strict = widget.strictDeletedFiles ?? widget.files;
+    _activeSourceFiles = widget.isDeletedScan ? List.from(strict) : List.from(widget.files);
+    _displayedFiles = List.from(_activeSourceFiles);
     _applyFilters();
   }
 
   void _applyFilters() {
-    var filtered = List<RecoverableFile>.from(widget.files);
+    var filtered = List<RecoverableFile>.from(_activeSourceFiles);
 
     // Filter by source
     if (_filterSource != 'All') {
@@ -93,7 +103,7 @@ class _ScanResultsScreenState extends State<ScanResultsScreen>
 
     // Filter duplicates
     if (_showDuplicates) {
-      final duplicateGroups = FileAnalyzer.findDuplicates(widget.files);
+      final duplicateGroups = FileAnalyzer.findDuplicates(_activeSourceFiles);
       final duplicatePaths = <String>{};
       for (final group in duplicateGroups) {
         for (final file in group) {
@@ -125,17 +135,17 @@ class _ScanResultsScreenState extends State<ScanResultsScreen>
   }
 
   void _applySmartFilter() {
-    final suggestions = FileAnalyzer.getSmartRecoverySuggestions(widget.files);
+    final suggestions = FileAnalyzer.getSmartRecoverySuggestions(_activeSourceFiles);
     final suggestionPaths = suggestions.take(5).map((f) => f.path).toSet();
     setState(() {
-      _displayedFiles = widget.files.where((f) => suggestionPaths.contains(f.path)).toList();
+      _displayedFiles = _activeSourceFiles.where((f) => suggestionPaths.contains(f.path)).toList();
       _selectedIndices.clear();
       _isSelectMode = false;
     });
   }
 
   int _getDuplicateCount() {
-    final duplicateGroups = FileAnalyzer.findDuplicates(widget.files);
+    final duplicateGroups = FileAnalyzer.findDuplicates(_activeSourceFiles);
     int count = 0;
     for (final group in duplicateGroups) {
       count += group.length;
@@ -169,6 +179,18 @@ class _ScanResultsScreenState extends State<ScanResultsScreen>
         _isSelectMode = true;
       }
     });
+  }
+
+  void _toggleDeletedResultMode(bool showPossible) {
+    final strict = widget.strictDeletedFiles ?? widget.files;
+    final possible = widget.possibleDeletedFiles ?? const <RecoverableFile>[];
+    setState(() {
+      _showPossibleDeleted = showPossible;
+      _activeSourceFiles = showPossible ? List.from(possible) : List.from(strict);
+      _selectedIndices.clear();
+      _isSelectMode = false;
+    });
+    _applyFilters();
   }
 
   Future<void> _recoverSelectedFiles() async {
@@ -431,6 +453,26 @@ class _ScanResultsScreenState extends State<ScanResultsScreen>
                 ],
               ),
             ),
+            if (widget.isDeletedScan &&
+                (widget.possibleDeletedFiles?.isNotEmpty == true))
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                child: Row(
+                  children: [
+                    ChoiceChip(
+                      label: const Text('Strict Deleted'),
+                      selected: !_showPossibleDeleted,
+                      onSelected: (_) => _toggleDeletedResultMode(false),
+                    ),
+                    const SizedBox(width: 8),
+                    ChoiceChip(
+                      label: const Text('Possible Recoverables'),
+                      selected: _showPossibleDeleted,
+                      onSelected: (_) => _toggleDeletedResultMode(true),
+                    ),
+                  ],
+                ),
+              ),
 
             // Filter Chips (Source)
             Container(
