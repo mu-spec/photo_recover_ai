@@ -109,13 +109,13 @@ class ScanCategoryScreen extends StatelessWidget {
   String get _scanAllDescription {
     switch (fileType) {
       case 'photo':
-        return 'Find all existing photos on your device storage';
+        return 'Find all photos (existing + recoverable traces) on your device';
       case 'video':
-        return 'Find all existing videos on your device storage';
+        return 'Find all videos (existing + recoverable traces) on your device';
       case 'file':
-        return 'Find documents, audio & other files';
+        return 'Find documents, audio & other files (existing + recoverable traces)';
       default:
-        return 'Find all existing files on your device';
+        return 'Find all files on your device';
     }
   }
 
@@ -305,10 +305,10 @@ class ScanCategoryScreen extends StatelessWidget {
                           Expanded(
                             child: Text(
                               fileType == 'photo'
-                                  ? '"Scan All" finds existing photos in your gallery. "Scan Deleted" performs a deep scan to recover lost or hidden photos.'
+                                  ? '"Scan All" includes both normal and recoverable photo traces. "Scan Deleted" focuses only on deleted/recoverable traces.'
                                   : fileType == 'video'
-                                      ? '"Scan All" finds existing videos in your storage. "Scan Deleted" performs a deep scan to recover lost or hidden videos.'
-                                      : '"Scan All" finds existing documents & audio files. "Scan Deleted" performs a deep scan to recover lost or hidden files.',
+                                      ? '"Scan All" includes both normal and recoverable video traces. "Scan Deleted" focuses only on deleted/recoverable traces.'
+                                      : '"Scan All" includes normal and recoverable document/audio traces. "Scan Deleted" focuses only on deleted/recoverable traces.',
                               style: TextStyle(
                                 color: AppTheme.getSecondaryTextColor(context),
                                 fontSize: 13,
