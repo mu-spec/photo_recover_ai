@@ -7,8 +7,6 @@ import 'package:permission_handler/permission_handler.dart';
 import '../main.dart';
 import '../utils/app_theme.dart';
 import '../utils/app_constants.dart';
-import 'privacy_policy_screen.dart';
-import 'terms_of_service_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -392,35 +390,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
             _buildSectionTitle('About'),
             const SizedBox(height: 8),
 
-            // Privacy Policy - navigates to in-app screen
+            // Privacy Policy - opens external URL
             _buildSettingsTile(
               icon: Icons.privacy_tip_outlined,
               color: const Color(0xFF10B981),
               title: 'Privacy Policy',
               subtitle: 'How we handle your data',
               trailing: const Icon(Icons.chevron_right, color: Color(0xFF9CA3AF)),
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => const PrivacyPolicyScreen(),
-                  ),
-                );
+              onTap: () async {
+                final uri = Uri.parse(AppConstants.privacyPolicyUrl);
+                if (await canLaunchUrl(uri)) {
+                  await launchUrl(uri, mode: LaunchMode.externalApplication);
+                }
               },
             ),
 
-            // Terms of Service - navigates to in-app screen
+            // Terms of Service - opens external URL
             _buildSettingsTile(
               icon: Icons.description_outlined,
               color: const Color(0xFF3B82F6),
               title: 'Terms of Service',
               subtitle: 'App usage terms',
               trailing: const Icon(Icons.chevron_right, color: Color(0xFF9CA3AF)),
-              onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => const TermsOfServiceScreen(),
-                  ),
-                );
+              onTap: () async {
+                final uri = Uri.parse(AppConstants.termsOfServiceUrl);
+                if (await canLaunchUrl(uri)) {
+                  await launchUrl(uri, mode: LaunchMode.externalApplication);
+                }
               },
             ),
 

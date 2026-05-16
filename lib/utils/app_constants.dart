@@ -46,6 +46,8 @@ class AppConstants {
   static const int maxFreeRecoveryPerScan = 10;
   static const int maxScanFilesFree = 100;
   static const String supportEmail = 'saaddkhan99@gmail.com';
+  static const String privacyPolicyUrl = 'https://mu-spec.github.io/photo_recover_ai/privacy-policy.html';
+  static const String termsOfServiceUrl = 'https://mu-spec.github.io/photo_recover_ai/terms-of-service.html';
 
   static const List<String> photoExtensions = [
     'jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'heic', 'heif',
