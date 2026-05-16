@@ -150,10 +150,11 @@ class ScanCategoryScreen extends StatelessWidget {
     adService.loadInterstitialAd();
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => PermissionScreen(fileType: fileType)),
-    ).then((permissionGranted) {
+    ).then((permissionGranted) async {
       if (permissionGranted == true && context.mounted) {
         // Show an ad before starting scan flow.
-        adService.showInterstitialAd();
+        await adService.showInterstitialAd(waitForLoad: true, waitTimeoutMs: 2200);
+        if (!context.mounted) return;
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (_) => ScanScreen(fileType: fileType, scanDeleted: scanDeleted),

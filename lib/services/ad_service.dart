@@ -15,6 +15,7 @@ class AdService {
   bool _isBannerLoaded = false;
   InterstitialAd? _interstitialAd;
   bool _isInterstitialLoaded = false;
+  bool _isInterstitialLoading = false;
   bool _isShowingInterstitial = false;
   bool _isInitialized = false;
 
@@ -83,13 +84,15 @@ class AdService {
   bool get isBannerLoaded => _isBannerLoaded;
 
   void loadInterstitialAd() {
-    if (!_isInitialized) return;
+    if (!_isInitialized || _isInterstitialLoading || _isInterstitialLoaded) return;
+    _isInterstitialLoading = true;
 
     InterstitialAd.load(
       adUnitId: _interstitialAdUnitId,
       request: const AdRequest(),
       adLoadCallback: InterstitialAdLoadCallback(
         onAdLoaded: (InterstitialAd ad) {
+          _isInterstitialLoading = false;
           _interstitialAd = ad;
           _isInterstitialLoaded = true;
           debugPrint('Interstitial ad loaded successfully');
@@ -114,6 +117,7 @@ class AdService {
           );
         },
         onAdFailedToLoad: (error) {
+          _isInterstitialLoading = false;
           _isInterstitialLoaded = false;
           debugPrint('Interstitial ad failed to load: $error');
         },
@@ -121,28 +125,37 @@ class AdService {
     );
   }
 
-  Future<void> showInterstitialAd() async {
+  Future<bool> showInterstitialAd({bool waitForLoad = false, int waitTimeoutMs = 1800}) async {
     if (_isShowingInterstitial) {
       debugPrint('Interstitial is already showing, skipping duplicate request.');
-      return;
+      return false;
     }
 
     if (_interstitialAd == null || !_isInterstitialLoaded) {
       debugPrint('Interstitial ad not ready, loading...');
       loadInterstitialAd();
-      return;
+      if (!waitForLoad) return false;
+
+      final deadline = DateTime.now().add(Duration(milliseconds: waitTimeoutMs));
+      while (DateTime.now().isBefore(deadline)) {
+        if (_interstitialAd != null && _isInterstitialLoaded) break;
+        await Future.delayed(const Duration(milliseconds: 120));
+      }
+      if (_interstitialAd == null || !_isInterstitialLoaded) return false;
     }
 
     try {
       _isShowingInterstitial = true;
       await _interstitialAd!.show();
       _isInterstitialLoaded = false;
+      return true;
     } catch (e) {
       debugPrint('Interstitial show error: $e');
       _isInterstitialLoaded = false;
       _interstitialAd?.dispose();
       _interstitialAd = null;
       loadInterstitialAd();
+      return false;
     } finally {
       _isShowingInterstitial = false;
     }

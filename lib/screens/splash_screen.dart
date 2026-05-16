@@ -60,7 +60,7 @@ class _SplashScreenState extends State<SplashScreen>
     // Attempt app-open ad behavior via interstitial during splash.
     Future.delayed(const Duration(milliseconds: 1100), () {
       if (!mounted) return;
-      adService.showInterstitialAd();
+      adService.showInterstitialAd(waitForLoad: true, waitTimeoutMs: 2200);
     });
   }
 
