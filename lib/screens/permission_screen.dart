@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
+import '../main.dart';
 import '../services/storage_scanner.dart';
 import '../utils/app_theme.dart';
 import '../utils/app_constants.dart';
+import 'scan_screen.dart';
 
 class PermissionScreen extends StatefulWidget {
   final String fileType;
-  const PermissionScreen({super.key, this.fileType = 'photo'});
+  final bool scanDeleted;
+  const PermissionScreen({
+    super.key,
+    this.fileType = 'photo',
+    this.scanDeleted = false,
+  });
 
   @override
   State<PermissionScreen> createState() => _PermissionScreenState();
@@ -24,7 +31,16 @@ class _PermissionScreenState extends State<PermissionScreen> {
     setState(() => _isRequesting = false);
 
     if (granted) {
-      Navigator.of(context).pop(true); // Return true to caller
+      await adService.showInterstitialAd(waitForLoad: true, waitTimeoutMs: 2200);
+      if (!mounted) return;
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (_) => ScanScreen(
+            fileType: widget.fileType,
+            scanDeleted: widget.scanDeleted,
+          ),
+        ),
+      );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

@@ -39,6 +39,7 @@ class _ScanScreenState extends State<ScanScreen> with TickerProviderStateMixin {
   List<RecoverableFile> _strictDeletedFiles = [];
   List<RecoverableFile> _possibleDeletedFiles = [];
   bool _isComplete = false;
+  bool _isFinalizingScan = false;
   int _totalScanned = 0;
   int _elapsedSeconds = 0;
   int _signaturesMatched = 0;
@@ -208,50 +209,63 @@ class _ScanScreenState extends State<ScanScreen> with TickerProviderStateMixin {
   }
 
   Future<void> _handleScanComplete() async {
-    if (_isComplete) return; // Prevent double-call
-
-    final strictResults = List<RecoverableFile>.from(_scanner.lastScanResults);
-    var finalResults = List<RecoverableFile>.from(strictResults);
-    _timerController?.cancel();
-    _pulseController.stop();
-    _radarController.stop();
-
-    final completionStatus = finalResults.isEmpty
-        ? (widget.scanDeleted
-            ? 'No recoverable deleted ${_typeLabel.toLowerCase()} found on this device right now.'
-            : 'Found 0 ${_typeLabel}.')
-        : 'Found ${finalResults.length} ${_typeLabel}!';
-
-    setState(() {
-      _progress = 1.0;
-      _filesFound = finalResults.length;
-      _isScanning = false;
-      _isPaused = false;
-      _isComplete = true;
-      _currentFolder = 'Scan finished';
-      _status = completionStatus;
-      _foundFiles = finalResults;
-      _strictDeletedFiles = strictResults;
-      _possibleDeletedFiles = [];
-    });
-
-    _checkController.forward();
-
-    // Show interstitial automatically when scan completes.
-    adService.showInterstitialAd(waitForLoad: true, waitTimeoutMs: 2200);
-
+    if (_isComplete || _isFinalizingScan) return;
+    _isFinalizingScan = true;
     try {
-      // Persist results before user returns to Home stats, so counters refresh correctly.
-      await _db.insertScanResults(finalResults);
-    } catch (e) {
-      debugPrint('DB save error: $e');
-    }
+      final strictResults = List<RecoverableFile>.from(_scanner.lastScanResults);
+      var finalResults = List<RecoverableFile>.from(strictResults);
+      _timerController?.cancel();
+      _pulseController.stop();
+      _radarController.stop();
 
-    try {
-      // Track scan insights for Recovery Stats / Insights screen.
-      await _insights.recordScan(widget.fileType, finalResults.length);
-    } catch (e) {
-      debugPrint('Insights scan record error: $e');
+      final completionStatus = finalResults.isEmpty
+          ? (widget.scanDeleted
+              ? 'No recoverable deleted ${_typeLabel.toLowerCase()} found on this device right now.'
+              : 'Found 0 ${_typeLabel}.')
+          : 'Found ${finalResults.length} ${_typeLabel}!';
+
+      if (!mounted) return;
+      setState(() {
+        _progress = 1.0;
+        _filesFound = finalResults.length;
+        _isScanning = false;
+        _isPaused = false;
+        _isComplete = true;
+        _currentFolder = 'Scan finished';
+        _status = completionStatus;
+        _foundFiles = finalResults;
+        _strictDeletedFiles = strictResults;
+        _possibleDeletedFiles = [];
+      });
+
+      _checkController.forward();
+
+      // Show interstitial automatically when scan completes.
+      adService.showInterstitialAd(waitForLoad: true, waitTimeoutMs: 2200);
+
+      try {
+        // Persist results before user returns to Home stats, so counters refresh correctly.
+        await _db.insertScanResults(finalResults);
+      } catch (e) {
+        debugPrint('DB save error: $e');
+      }
+
+      try {
+        // Track scan insights for Recovery Stats / Insights screen.
+        await _insights.recordScan(widget.fileType, finalResults.length);
+      } catch (e) {
+        debugPrint('Insights scan record error: $e');
+      }
+    } catch (e, st) {
+      debugPrint('Scan completion error: $e');
+      debugPrint('$st');
+      if (!mounted) return;
+      setState(() {
+        _isScanning = false;
+        _status = 'Scan completed with minor error. Please open results again.';
+      });
+    } finally {
+      _isFinalizingScan = false;
     }
   }
 

@@ -4,7 +4,6 @@ import '../utils/app_theme.dart';
 import '../utils/app_constants.dart';
 import '../widgets/common_widgets.dart';
 import 'permission_screen.dart';
-import 'scan_screen.dart';
 
 class ScanCategoryScreen extends StatelessWidget {
   final String fileType; // 'photo', 'video', or 'file'
@@ -149,19 +148,13 @@ class ScanCategoryScreen extends StatelessWidget {
     // Keep interstitial warm before user reaches scan start.
     adService.loadInterstitialAd();
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => PermissionScreen(fileType: fileType)),
-    ).then((permissionGranted) async {
-      if (permissionGranted == true && context.mounted) {
-        // Show an ad before starting scan flow.
-        await adService.showInterstitialAd(waitForLoad: true, waitTimeoutMs: 2200);
-        if (!context.mounted) return;
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => ScanScreen(fileType: fileType, scanDeleted: scanDeleted),
-          ),
-        );
-      }
-    });
+      MaterialPageRoute(
+        builder: (_) => PermissionScreen(
+          fileType: fileType,
+          scanDeleted: scanDeleted,
+        ),
+      ),
+    );
   }
 
   @override
