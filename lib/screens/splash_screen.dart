@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../main.dart';
 import 'home_screen.dart';
 import 'onboarding_screen.dart';
 
@@ -17,6 +18,7 @@ class _SplashScreenState extends State<SplashScreen>
   late Animation<double> _scaleAnimation;
   late Animation<double> _slideAnimation;
   late Animation<double> _loadingFadeAnimation;
+  bool _launchAdRequested = false;
 
   @override
   void initState() {
@@ -47,7 +49,19 @@ class _SplashScreenState extends State<SplashScreen>
     );
 
     _controller.forward();
+    _tryShowLaunchAd();
     _navigateToHome();
+  }
+
+  void _tryShowLaunchAd() {
+    if (_launchAdRequested) return;
+    _launchAdRequested = true;
+
+    // Attempt app-open ad behavior via interstitial during splash.
+    Future.delayed(const Duration(milliseconds: 1100), () {
+      if (!mounted) return;
+      adService.showInterstitialAd();
+    });
   }
 
   void _navigateToHome() async {
