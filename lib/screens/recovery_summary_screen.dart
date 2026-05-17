@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 import '../models/recoverable_file.dart';
 import '../utils/app_theme.dart';
+import '../utils/app_constants.dart';
 import '../widgets/common_widgets.dart';
 import 'recovered_files_screen.dart';
 
@@ -215,7 +216,7 @@ class _RecoverySummaryScreenState extends State<RecoverySummaryScreen>
         (widget.recoveredCount / (widget.recoveredCount + widget.failedCount) * 100)
             .toStringAsFixed(1);
     final text =
-        'Photo Recover AI - Recovery Complete!\n\n'
+        '${AppConstants.appName} - Restore Complete!\n\n'
         'Type: ${_fileTypeLabel}\n'
         'Files Recovered: ${widget.recoveredCount}\n'
         'Failed: ${widget.failedCount}\n'
@@ -223,7 +224,7 @@ class _RecoverySummaryScreenState extends State<RecoverySummaryScreen>
         'Total Size: $_formattedSize\n'
         'Time Taken: $_formattedTime\n'
         'Saved to: ${widget.recoveryPath}\n\n'
-        'Download Photo Recover AI today!';
+        'Try ${AppConstants.appName} today!';
     Share.share(text);
   }
 

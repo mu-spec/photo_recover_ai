@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../main.dart';
-import '../services/storage_scanner.dart';
+import '../services/permission_manager.dart';
 import '../utils/app_theme.dart';
 import '../utils/app_constants.dart';
 import 'scan_screen.dart';
@@ -20,12 +20,12 @@ class PermissionScreen extends StatefulWidget {
 
 class _PermissionScreenState extends State<PermissionScreen> {
   bool _isRequesting = false;
+  final PermissionManager _permissionManager = PermissionManager();
 
   Future<void> _requestPermission() async {
     setState(() => _isRequesting = true);
 
-    final scanner = StorageScanner();
-    final granted = await scanner.requestPermissionsForType(widget.fileType);
+    final granted = await _permissionManager.requestForScanType(widget.fileType);
 
     if (!mounted) return;
     setState(() => _isRequesting = false);
@@ -46,8 +46,8 @@ class _PermissionScreenState extends State<PermissionScreen> {
         SnackBar(
           content: Text(
             widget.fileType == 'file'
-                ? 'All files access is required to scan documents and general files.'
-                : 'Required media permission is missing. Please allow access and try again.',
+                ? 'File scan needs storage permission. You can continue with media-focused scanning anytime.'
+                : 'Media permission is required to continue scanning accessible media.',
           ),
           backgroundColor: AppTheme.warningColor,
           behavior: SnackBarBehavior.floating,
@@ -128,7 +128,7 @@ class _PermissionScreenState extends State<PermissionScreen> {
 
               // Subtitle
               Text(
-                '${AppConstants.appName} needs access to your storage to scan and recover deleted files.',
+                '${AppConstants.appName} needs storage access to find accessible, cached, and recently deleted media (device dependent).',
                 style: TextStyle(
                   color: AppTheme.textSecondary,
                   fontSize: 14,
@@ -150,7 +150,7 @@ class _PermissionScreenState extends State<PermissionScreen> {
                       iconBgColor: AppTheme.primaryColor.withOpacity(0.1),
                       title: 'Storage Access',
                       description:
-                          'Scan your device storage to find deleted photos, videos, and files.',
+                          'Scan accessible folders like DCIM, Pictures, Download, and Android/media.',
                     ),
                     const SizedBox(height: 14),
                     _PermissionCard(
@@ -159,7 +159,7 @@ class _PermissionScreenState extends State<PermissionScreen> {
                       iconBgColor: const Color(0xFF00D9A6).withOpacity(0.1),
                       title: 'File Recovery',
                       description:
-                          'Save recovered files to a secure folder on your device.',
+                          'Restore accessible files by copying them into your secure local folder.',
                     ),
                     const SizedBox(height: 14),
                     _PermissionCard(

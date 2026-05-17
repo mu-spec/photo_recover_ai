@@ -572,19 +572,18 @@ class StorageScanner {
   }
 
   Future<bool> requestPermissionsForType(String fileType) async {
-    if (await _checkAndRequestPermission(Permission.manageExternalStorage)) return true;
-    if (await _checkAndRequestPermission(Permission.storage)) return true;
-
     switch (fileType) {
       case 'photo':
-        return await _checkAndRequestPermission(Permission.photos);
+        if (await _checkAndRequestPermission(Permission.photos)) return true;
+        return await _checkAndRequestPermission(Permission.storage);
       case 'video':
-        return await _checkAndRequestPermission(Permission.videos);
+        if (await _checkAndRequestPermission(Permission.videos)) return true;
+        return await _checkAndRequestPermission(Permission.storage);
       case 'file':
       default:
-        // Generic files/documents are often outside media collections.
-        // Without broad storage access, recovery is unreliable.
-        return false;
+        if (await _checkAndRequestPermission(Permission.storage)) return true;
+        // Request broad storage only when user explicitly runs file scan.
+        return await _checkAndRequestPermission(Permission.manageExternalStorage);
     }
   }
 
@@ -954,32 +953,34 @@ class StorageScanner {
       if (_isCancelled) { yield _buildFinal(allFiles, stopwatch, totalBytes); return; }
 
       // ================================================================
-      // PHASE 6: MAGIC BYTES SCAN (extensionless & misnamed files)
+      // PHASE 6: MAGIC BYTES SCAN (only for accessible "all" scan mode)
       // ================================================================
-      yield ScanProgress(
-        progress: 0.58, currentFolder: 'Signature Scan', filesFound: allFiles.length,
-        status: 'Scanning files by binary signatures (magic bytes)...',
-        phase: 'carving', totalScanned: scannedPaths.length,
-        folderCount: totalDirsScanned, totalBytesScanned: totalBytes,
-        storageLocations: locIndex + 1, signaturesMatched: _signaturesMatched,
-        elapsedSeconds: stopwatch.elapsedMilliseconds ~/ 1000,
-      );
-      await Future.delayed(const Duration(milliseconds: 300));
+      if (!deletedOnly) {
+        yield ScanProgress(
+          progress: 0.58, currentFolder: 'Signature Scan', filesFound: allFiles.length,
+          status: 'Scanning files by binary signatures (magic bytes)...',
+          phase: 'carving', totalScanned: scannedPaths.length,
+          folderCount: totalDirsScanned, totalBytesScanned: totalBytes,
+          storageLocations: locIndex + 1, signaturesMatched: _signaturesMatched,
+          elapsedSeconds: stopwatch.elapsedMilliseconds ~/ 1000,
+        );
+        await Future.delayed(const Duration(milliseconds: 300));
 
-      final sigResults = await _scanBySignatures(
-        baseStoragePath, extensions, fileType, scannedPaths, isDeepScan,
-      );
-      allFiles.addAll(sigResults);
-      totalBytes += sigResults.fold<int>(0, (sum, f) => sum + f.size);
+        final sigResults = await _scanBySignatures(
+          baseStoragePath, extensions, fileType, scannedPaths, isDeepScan,
+        );
+        allFiles.addAll(sigResults);
+        totalBytes += sigResults.fold<int>(0, (sum, f) => sum + f.size);
 
-      yield ScanProgress(
-        progress: 0.63, currentFolder: 'Signature Scan', filesFound: allFiles.length,
-        status: 'Magic bytes matched ${_signaturesMatched} additional files',
-        phase: 'carving', totalScanned: scannedPaths.length,
-        folderCount: totalDirsScanned, totalBytesScanned: totalBytes,
-        storageLocations: locIndex + 1, signaturesMatched: _signaturesMatched,
-        elapsedSeconds: stopwatch.elapsedMilliseconds ~/ 1000,
-      );
+        yield ScanProgress(
+          progress: 0.63, currentFolder: 'Signature Scan', filesFound: allFiles.length,
+          status: 'Magic bytes matched ${_signaturesMatched} additional files',
+          phase: 'carving', totalScanned: scannedPaths.length,
+          folderCount: totalDirsScanned, totalBytesScanned: totalBytes,
+          storageLocations: locIndex + 1, signaturesMatched: _signaturesMatched,
+          elapsedSeconds: stopwatch.elapsedMilliseconds ~/ 1000,
+        );
+      }
 
       // ================================================================
       // DEEP SCAN ONLY PHASES (7-11)

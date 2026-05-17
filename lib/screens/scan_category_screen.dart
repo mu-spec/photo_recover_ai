@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../main.dart';
 import '../utils/app_theme.dart';
-import '../utils/app_constants.dart';
 import '../widgets/common_widgets.dart';
 import 'permission_screen.dart';
 
@@ -13,13 +12,13 @@ class ScanCategoryScreen extends StatelessWidget {
   String get _title {
     switch (fileType) {
       case 'photo':
-        return 'Recover Photos';
+        return 'Restore Photos';
       case 'video':
-        return 'Recover Videos';
+        return 'Restore Videos';
       case 'file':
-        return 'Recover Files';
+        return 'Restore Files';
       default:
-        return 'Recover';
+        return 'Restore';
     }
   }
 
@@ -95,11 +94,11 @@ class ScanCategoryScreen extends StatelessWidget {
   String get _scanAllTitle {
     switch (fileType) {
       case 'photo':
-        return 'Scan All Photos';
+        return 'Scan Accessible Photos';
       case 'video':
-        return 'Scan All Videos';
+        return 'Scan Accessible Videos';
       case 'file':
-        return 'Scan All Files';
+        return 'Scan Accessible Files';
       default:
         return 'Scan All';
     }
@@ -108,11 +107,11 @@ class ScanCategoryScreen extends StatelessWidget {
   String get _scanAllDescription {
     switch (fileType) {
       case 'photo':
-        return 'Find all photos (existing + recoverable traces) on your device';
+        return 'Find accessible photos from DCIM, Pictures, Downloads, and Android/media';
       case 'video':
-        return 'Find all videos (existing + recoverable traces) on your device';
+        return 'Find accessible videos from storage and app media folders';
       case 'file':
-        return 'Find documents, audio & other files (existing + recoverable traces)';
+        return 'Find accessible documents, audio, and app media traces';
       default:
         return 'Find all files on your device';
     }
@@ -121,11 +120,11 @@ class ScanCategoryScreen extends StatelessWidget {
   String get _scanDeletedTitle {
     switch (fileType) {
       case 'photo':
-        return 'Scan Deleted Photos';
+        return 'Scan Recoverable Traces';
       case 'video':
-        return 'Scan Deleted Videos';
+        return 'Scan Recoverable Traces';
       case 'file':
-        return 'Scan Deleted Files';
+        return 'Scan Recoverable Traces';
       default:
         return 'Scan Deleted';
     }
@@ -134,13 +133,13 @@ class ScanCategoryScreen extends StatelessWidget {
   String get _scanDeletedDescription {
     switch (fileType) {
       case 'photo':
-        return 'Deep scan for deleted, hidden & trashed photos';
+        return 'Check recycle-bin paths, cache, thumbnails, and messenger traces';
       case 'video':
-        return 'Deep scan for deleted, hidden & trashed videos';
+        return 'Check recycle-bin paths, cache, thumbnails, and messenger traces';
       case 'file':
-        return 'Deep scan for deleted & hidden documents';
+        return 'Check recycle-bin paths and accessible file traces';
       default:
-        return 'Deep scan for deleted & hidden files';
+        return 'Check recoverable traces from accessible storage';
     }
   }
 
@@ -299,10 +298,10 @@ class ScanCategoryScreen extends StatelessWidget {
                           Expanded(
                             child: Text(
                               fileType == 'photo'
-                                  ? '"Scan All" includes both normal and recoverable photo traces. "Scan Deleted" focuses only on deleted/recoverable traces.'
+                                  ? '"Scan Accessible" shows files the app can legally access. "Recoverable Traces" checks recycle bins, cache and messenger folders only.'
                                   : fileType == 'video'
-                                      ? '"Scan All" includes both normal and recoverable video traces. "Scan Deleted" focuses only on deleted/recoverable traces.'
-                                      : '"Scan All" includes normal and recoverable document/audio traces. "Scan Deleted" focuses only on deleted/recoverable traces.',
+                                      ? '"Scan Accessible" shows files the app can legally access. "Recoverable Traces" checks recycle bins, cache and messenger folders only.'
+                                      : '"Scan Accessible" shows files the app can legally access. "Recoverable Traces" checks recycle bins, cache and messenger folders only.',
                               style: TextStyle(
                                 color: AppTheme.getSecondaryTextColor(context),
                                 fontSize: 13,

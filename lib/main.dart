@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'models/app_settings.dart';
 import 'services/ad_service.dart';
 import 'utils/app_theme.dart';
+import 'utils/app_constants.dart';
 import 'screens/splash_screen.dart';
 
 // Global ad service instance
@@ -98,7 +99,7 @@ class PhotoRecoverApp extends StatelessWidget {
     );
 
     return MaterialApp(
-      title: 'Photo Recover',
+      title: AppConstants.appName,
       debugShowCheckedModeBanner: false,
       builder: (context, child) {
         return Column(

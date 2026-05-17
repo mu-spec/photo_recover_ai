@@ -108,18 +108,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         Row(
                           children: [
                             Text(
-                              'Photo',
-                              style: TextStyle(
-                                color: AppTheme.primaryColor,
-                                fontSize: 28,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(
-                              ' Recover',
+                              AppConstants.appName,
                               style: TextStyle(
                                 color: AppTheme.getPrimaryTextColor(context),
-                                fontSize: 28,
+                                fontSize: 24,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -127,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Recover your deleted memories',
+                          'Find and restore accessible media safely',
                           style: TextStyle(
                             color: AppTheme.getSecondaryTextColor(context),
                             fontSize: 14,
@@ -165,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 // Scan Section Header
                 Text(
-                  'Scan & Recover',
+                  'Scan & Restore',
                   style: TextStyle(
                     color: AppTheme.getPrimaryTextColor(context),
                     fontSize: 18,
@@ -176,8 +168,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 // === PHOTOS ===
                 RecoveryTypeCard(
-                  title: 'Recover Photos',
-                  description: 'Scan all photos or recover deleted photos',
+                  title: 'Restore Photos',
+                  description: 'Scan accessible photos and possible recoverable traces',
                   icon: Icons.photo_library_outlined,
                   gradientColors: AppColors.gradientPrimary,
                   onTap: () => _openScanCategory('photo'),
@@ -187,8 +179,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 // === VIDEOS ===
                 RecoveryTypeCard(
-                  title: 'Recover Videos',
-                  description: 'Scan all videos or recover deleted videos',
+                  title: 'Restore Videos',
+                  description: 'Scan accessible videos and possible recoverable traces',
                   icon: Icons.videocam_outlined,
                   gradientColors: AppColors.gradientAccent,
                   onTap: () => _openScanCategory('video'),
@@ -198,8 +190,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 // === FILES ===
                 RecoveryTypeCard(
-                  title: 'Recover Files',
-                  description: 'Scan all files or recover deleted documents',
+                  title: 'Restore Files',
+                  description: 'Scan accessible files and recoverable traces',
                   icon: Icons.folder_outlined,
                   gradientColors: AppColors.gradientWarm,
                   onTap: () => _openScanCategory('file'),
@@ -318,8 +310,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   onTap: () async {
                     try {
                       await Share.share(
-                        'Check out Photo Recover AI - Recover your deleted photos, videos & files!\nhttps://play.google.com/store/apps/details?id=com.photoRecoverAI.photo_recover_ai',
-                        subject: 'Photo Recover AI',
+                        'Check out ${AppConstants.appName} - Find and restore accessible media safely.\nhttps://play.google.com/store/apps/details?id=com.photoRecoverAI.photo_recover_ai',
+                        subject: AppConstants.appName,
                       );
                     } catch (_) {}
                   },

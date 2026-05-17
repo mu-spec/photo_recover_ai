@@ -241,7 +241,7 @@ class _RecoveredFilesScreenState extends State<RecoveredFilesScreen>
                         icon: Icons.folder_open_outlined,
                         title: 'No Recovered Files',
                         description:
-                            'Your recovered files will appear here. Start a scan to find deleted files.',
+                            'Your restored files will appear here. Start a scan to find accessible or recoverable traces.',
                       )
                     : ListView.builder(
                         padding: const EdgeInsets.symmetric(horizontal: 16),

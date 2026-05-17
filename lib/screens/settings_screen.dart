@@ -166,11 +166,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Photo Recover',
+                      Text(
+                        AppConstants.appName,
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 20,
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -429,7 +429,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               trailing: const Icon(Icons.open_in_new, color: Color(0xFF9CA3AF), size: 18),
               onTap: () async {
                 final uri = Uri.parse(
-                  'mailto:${AppConstants.supportEmail}?subject=Photo Recover App Support&body=Hi, I need help with Photo Recover app.\n\nMy issue:',
+                  'mailto:${AppConstants.supportEmail}?subject=${AppConstants.appName} Support&body=Hi, I need help with ${AppConstants.appName}.\n\nMy issue:',
                 );
                 if (await canLaunchUrl(uri)) {
                   await launchUrl(uri);

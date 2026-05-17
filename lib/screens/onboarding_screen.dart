@@ -19,10 +19,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final List<_OnboardingPage> _pages = const [
     _OnboardingPage(
       icon: Icons.shield_outlined,
-      title: 'Welcome to Photo Recover',
+      title: 'Welcome to MediaRestore Vault AI',
       description:
-          'Recover your deleted photos, videos & files safely and securely. '
-          'Our advanced AI engine scans your device to find lost memories.',
+          'Find and restore accessible, cached, and recently deleted media (device dependent). '
+          'Everything stays local on your phone.',
       illustrationIcons: [
         Icons.photo_library_outlined,
         Icons.videocam_outlined,
@@ -45,8 +45,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       icon: Icons.psychology_outlined,
       title: 'Smart Recovery',
       description:
-          'AI-powered scanning finds deleted files from WhatsApp, Camera, Gallery & more. '
-          'Deep scan modes uncover hidden recoverable files.',
+          'Smart scanning indexes Camera, Gallery, WhatsApp and other accessible folders. '
+          'Results are categorized into existing media, cache, and recently deleted traces.',
       illustrationIcons: [
         Icons.auto_awesome,
         Icons.scanner,

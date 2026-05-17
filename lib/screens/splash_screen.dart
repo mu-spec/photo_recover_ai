@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../main.dart';
+import '../utils/app_constants.dart';
 import 'home_screen.dart';
 import 'onboarding_screen.dart';
 
@@ -154,11 +155,11 @@ class _SplashScreenState extends State<SplashScreen>
                     opacity: _fadeAnimation,
                     child: Transform.translate(
                       offset: Offset(0, _slideAnimation.value * 0.5),
-                      child: const Text(
-                        'Photo Recover',
+                      child: Text(
+                        AppConstants.appName,
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 34,
+                          fontSize: 28,
                           fontWeight: FontWeight.w800,
                           letterSpacing: 0.5,
                         ),

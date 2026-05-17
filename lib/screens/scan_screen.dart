@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../main.dart';
-import '../services/storage_scanner.dart';
-import '../services/database_helper.dart';
+import '../services/file_scanner_service.dart';
+import '../services/recovery_repository.dart';
+import '../services/media_categorizer.dart';
+import '../services/storage_scanner.dart' show ScanProgress;
 import '../services/recovery_insights_service.dart';
 import '../models/recoverable_file.dart';
 import '../utils/app_theme.dart';
@@ -23,8 +25,8 @@ class ScanScreen extends StatefulWidget {
 }
 
 class _ScanScreenState extends State<ScanScreen> with TickerProviderStateMixin {
-  final StorageScanner _scanner = StorageScanner();
-  final DatabaseHelper _db = DatabaseHelper.instance;
+  final FileScannerService _scanner = FileScannerService();
+  final RecoveryRepository _repository = RecoveryRepository();
   final RecoveryInsightsService _insights = RecoveryInsightsService();
 
   double _progress = 0.0;
@@ -75,7 +77,7 @@ class _ScanScreenState extends State<ScanScreen> with TickerProviderStateMixin {
     }
   }
 
-  String get _modeLabel => widget.scanDeleted ? 'Deleted' : 'All';
+  String get _modeLabel => widget.scanDeleted ? 'Traces' : 'Accessible';
 
   IconData get _typeIcon {
     switch (widget.fileType) {
@@ -119,22 +121,12 @@ class _ScanScreenState extends State<ScanScreen> with TickerProviderStateMixin {
   }
 
   void _startScan() async {
-    await _db.clearScanResults(widget.fileType);
+    await _repository.clearScanResults(widget.fileType);
 
-    Stream<ScanProgress> scanStream;
-    if (widget.scanDeleted) {
-      switch (widget.fileType) {
-        case 'photo': scanStream = _scanner.scanDeletedPhotos(); break;
-        case 'video': scanStream = _scanner.scanDeletedVideos(); break;
-        default: scanStream = _scanner.scanDeletedFiles(); break;
-      }
-    } else {
-      switch (widget.fileType) {
-        case 'photo': scanStream = _scanner.scanAllPhotos(); break;
-        case 'video': scanStream = _scanner.scanAllVideos(); break;
-        default: scanStream = _scanner.scanAllFiles(); break;
-      }
-    }
+    final scanStream = _scanner.scan(
+      fileType: widget.fileType,
+      scanDeleted: widget.scanDeleted,
+    );
 
     _scanSubscription = scanStream.listen(
       (progress) {
@@ -218,11 +210,24 @@ class _ScanScreenState extends State<ScanScreen> with TickerProviderStateMixin {
       _pulseController.stop();
       _radarController.stop();
 
+      if (widget.scanDeleted) {
+        finalResults = finalResults.where(_scanner.isLikelyDeletedTrace).toList();
+      }
+
+      final recycleCount = finalResults
+          .where((f) => MediaCategorizer.categorize(f) == MediaCategory.recycleBin)
+          .length;
+      final cacheCount = finalResults
+          .where((f) => MediaCategorizer.categorize(f) == MediaCategory.cacheThumbnail)
+          .length;
+
       final completionStatus = finalResults.isEmpty
           ? (widget.scanDeleted
-              ? 'No recoverable deleted ${_typeLabel.toLowerCase()} found on this device right now.'
-              : 'Found 0 ${_typeLabel}.')
-          : 'Found ${finalResults.length} ${_typeLabel}!';
+              ? 'No deleted traces found on this device. Only accessible and cached media can be restored.'
+              : 'No matching accessible media found.')
+          : (widget.scanDeleted
+              ? 'Found ${finalResults.length} possible recoverable traces ($recycleCount recycle, $cacheCount cache).'
+              : 'Found ${finalResults.length} accessible ${_typeLabel.toLowerCase()}.');
 
       if (!mounted) return;
       setState(() {
@@ -245,7 +250,7 @@ class _ScanScreenState extends State<ScanScreen> with TickerProviderStateMixin {
 
       try {
         // Persist results before user returns to Home stats, so counters refresh correctly.
-        await _db.insertScanResults(finalResults);
+        await _repository.saveScanResults(finalResults);
       } catch (e) {
         debugPrint('DB save error: $e');
       }
@@ -639,8 +644,8 @@ class _ScanScreenState extends State<ScanScreen> with TickerProviderStateMixin {
         Expanded(
           child: _buildStatCard(
             icon: Icons.phonelink_setup,
-            label: widget.scanDeleted ? 'Deleted Filter' : 'Full Scan',
-            value: widget.scanDeleted ? '12+Filter' : '12 Phases',
+            label: widget.scanDeleted ? 'Trace Filter' : 'Accessible Scan',
+            value: widget.scanDeleted ? 'Recycle+Cache' : 'Storage Sources',
             color: widget.scanDeleted ? const Color(0xFF8B5CF6) : const Color(0xFF10B981),
           ),
         ),
@@ -767,6 +772,30 @@ class _ScanScreenState extends State<ScanScreen> with TickerProviderStateMixin {
   Widget _buildActionButtons() {
     return Column(
       children: [
+        if (_isComplete && widget.scanDeleted && _foundFiles.isEmpty)
+          Container(
+            width: double.infinity,
+            margin: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppTheme.warningColor.withOpacity(0.08),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppTheme.warningColor.withOpacity(0.2)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text(
+                  'No deleted traces found. Try these sources:',
+                  style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
+                ),
+                SizedBox(height: 6),
+                Text('1. Google Photos > Trash', style: TextStyle(fontSize: 12)),
+                Text('2. Device Gallery > Recently Deleted / Recycle Bin', style: TextStyle(fontSize: 12)),
+                Text('3. WhatsApp backup/media folders', style: TextStyle(fontSize: 12)),
+              ],
+            ),
+          ),
         if (_foundFiles.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(bottom: 12),
@@ -861,7 +890,13 @@ class _ScanScreenState extends State<ScanScreen> with TickerProviderStateMixin {
         if (_isPaused)
           Text('Scan paused. Tap play to continue.', style: TextStyle(color: AppTheme.warningColor, fontSize: 13, fontWeight: FontWeight.w600), textAlign: TextAlign.center)
         else
-          Text('Please wait while scanning...\nDo not close the app.', style: TextStyle(color: AppTheme.textLight, fontSize: 12), textAlign: TextAlign.center),
+          Text(
+            widget.scanDeleted
+                ? 'Scanning accessible recycle/cache/messenger traces.\nRaw deleted block recovery is not available on non-root Android.'
+                : 'Scanning accessible storage sources.\nDo not close the app.',
+            style: TextStyle(color: AppTheme.textLight, fontSize: 12),
+            textAlign: TextAlign.center,
+          ),
       ],
     );
   }

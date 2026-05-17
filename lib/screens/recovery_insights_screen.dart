@@ -708,7 +708,7 @@ class _RecoveryInsightsScreenState extends State<RecoveryInsightsScreen> {
     final tips = [
       {
         'icon': Icons.schedule,
-        'text': 'Scan weekly to catch recently deleted files before they are overwritten.',
+        'text': 'Scan weekly to index recycle-bin and cache traces before they rotate.',
       },
       {
         'icon': Icons.folder_outlined,
@@ -716,7 +716,7 @@ class _RecoveryInsightsScreenState extends State<RecoveryInsightsScreen> {
       },
       {
         'icon': Icons.save_outlined,
-        'text': 'Recover important files immediately — deleted files may be overwritten over time.',
+        'text': 'Restore important files immediately — trace files can disappear over time.',
       },
     ];
 
