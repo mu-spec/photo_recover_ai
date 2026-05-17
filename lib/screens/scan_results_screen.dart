@@ -49,6 +49,7 @@ class _ScanResultsScreenState extends State<ScanResultsScreen>
   bool _isSelectMode = false;
   bool _isRecovering = false;
   int _recoveredCount = 0;
+  bool _isRecoveryDialogOpen = false;
 
   final List<String> _sources = [
     'All', 'DCIM', 'WhatsApp', 'Pictures', 'Downloads', 'Cache', 'Hidden',
@@ -214,6 +215,7 @@ class _ScanResultsScreenState extends State<ScanResultsScreen>
     );
 
     // Show progress dialog
+    _isRecoveryDialogOpen = true;
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -343,13 +345,17 @@ class _ScanResultsScreenState extends State<ScanResultsScreen>
     recoveryStopwatch.stop();
     final elapsed = recoveryStopwatch.elapsedMilliseconds ~/ 1000;
 
-    // Dispose the notifier
+    // Close the progress dialog first (on root navigator), then dispose notifier.
+    if (_isRecoveryDialogOpen && mounted) {
+      final rootNav = Navigator.of(context, rootNavigator: true);
+      if (rootNav.canPop()) {
+        rootNav.pop();
+      }
+    }
+    _isRecoveryDialogOpen = false;
     progressNotifier.dispose();
 
-    // Close the progress dialog
-    if (mounted) {
-      Navigator.of(context).pop(); // close progress dialog
-    }
+    if (!mounted) return;
 
     // Provider is already imported via main.dart
     Provider.of<AppSettingsProvider>(context, listen: false).incrementRecoveredCount(recovered);
@@ -360,30 +366,29 @@ class _ScanResultsScreenState extends State<ScanResultsScreen>
     // Show interstitial ad after recovery
     adService.showInterstitialAd();
 
-    if (mounted) {
-      setState(() {
-        _isRecovering = false;
-        _recoveredCount = recovered;
-        _selectedIndices.clear();
-        _isSelectMode = false;
-      });
+    setState(() {
+      _isRecovering = false;
+      _recoveredCount = recovered;
+      _selectedIndices.clear();
+      _isSelectMode = false;
+    });
 
-      // Navigate to RecoverySummaryScreen
-      final recoveryPath = await _recoveryService.getRecoveryBasePath();
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (_) => RecoverySummaryScreen(
-            fileType: widget.fileType,
-            recoveredCount: recovered,
-            failedCount: total - recovered,
-            totalSizeBytes: totalSize,
-            elapsedTimeSeconds: elapsed,
-            recoveryPath: recoveryPath,
-            recoveredFileNames: recoveredNames,
-          ),
+    // Navigate to RecoverySummaryScreen
+    final recoveryPath = await _recoveryService.getRecoveryBasePath();
+    if (!mounted) return;
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (_) => RecoverySummaryScreen(
+          fileType: widget.fileType,
+          recoveredCount: recovered,
+          failedCount: total - recovered,
+          totalSizeBytes: totalSize,
+          elapsedTimeSeconds: elapsed,
+          recoveryPath: recoveryPath,
+          recoveredFileNames: recoveredNames,
         ),
-      );
-    }
+      ),
+    );
   }
 
   String _getFileTypeLabel() {
