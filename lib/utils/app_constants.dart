@@ -40,7 +40,7 @@ class AppColors {
 }
 
 class AppConstants {
-  static const String appName = 'MediaRestore Vault AI';
+  static const String appName = 'Media Rescue';
   static const String appVersion = '1.0.0';
   static const String recoveryFolder = 'PhotoRecover';
   static const int maxFreeRecoveryPerScan = 10;
@@ -61,3 +61,4 @@ class AppConstants {
     'pdf', 'doc', 'docx', 'xls', 'xlsx', 'txt', 'mp3', 'wav', 'aac',
   ];
 }
+

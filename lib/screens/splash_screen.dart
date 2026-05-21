@@ -173,7 +173,7 @@ class _SplashScreenState extends State<SplashScreen>
                     child: Transform.translate(
                       offset: Offset(0, _slideAnimation.value),
                       child: Text(
-                        'Recover Your Deleted Memories',
+                        'Find Accessible and Trace Media Safely',
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.6),
                           fontSize: 15,

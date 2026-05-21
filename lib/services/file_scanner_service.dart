@@ -1,11 +1,18 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
+
 import '../models/recoverable_file.dart';
 import 'media_categorizer.dart';
+import 'media_store_scanner.dart';
 import 'storage_scanner.dart';
 
 class FileScannerService {
   final StorageScanner _scanner = StorageScanner();
+  final MediaStoreScannerService _mediaStoreScanner = MediaStoreScannerService();
 
-  List<RecoverableFile> get lastScanResults => _scanner.lastScanResults;
+  List<RecoverableFile> _lastScanResults = [];
+  List<RecoverableFile> get lastScanResults => _lastScanResults;
 
   void cancelScan() => _scanner.cancelScan();
   void resetCancel() => _scanner.resetCancel();
@@ -16,12 +23,93 @@ class FileScannerService {
     required String fileType,
     required bool scanDeleted,
   }) async* {
-    final base = _baseStream(fileType, scanDeleted);
+    if (_shouldUseMediaStore(fileType)) {
+      bool usedFallback = false;
+      try {
+        final payload = await _mediaStoreScanner.scanAccessibleMedia(
+          fileType: fileType,
+          deletedOnly: scanDeleted,
+        );
 
+        final files = scanDeleted
+            ? payload.files.where(isLikelyDeletedTrace).toList()
+            : payload.files;
+
+        // If strict deleted scan returns empty from MediaStore, fallback to
+        // legacy trace scan so recycle/cache paths are still checked.
+        if (scanDeleted && files.isEmpty) {
+          usedFallback = true;
+          yield* _scanWithLegacy(fileType, scanDeleted);
+          return;
+        }
+
+        _lastScanResults = files;
+
+        yield ScanProgress(
+          progress: 0.15,
+          currentFolder: 'MediaStore',
+          filesFound: 0,
+          status: 'Scanning storage...',
+          phase: 'scanning',
+          totalScanned: payload.scannedCount,
+        );
+        yield ScanProgress(
+          progress: 0.55,
+          currentFolder: 'MediaStore',
+          filesFound: files.length,
+          status: 'Indexing files...',
+          phase: 'analysis',
+          totalScanned: payload.scannedCount,
+        );
+        yield ScanProgress(
+          progress: 0.85,
+          currentFolder: 'MediaStore',
+          filesFound: files.length,
+          status: 'Categorizing media...',
+          phase: 'analysis',
+          totalScanned: payload.scannedCount,
+        );
+        yield ScanProgress(
+          progress: 1.0,
+          currentFolder: 'Complete',
+          filesFound: files.length,
+          status: files.isEmpty
+              ? (scanDeleted
+                  ? 'No deleted traces found on this device. Only accessible and cached media can be restored.'
+                  : 'No matching accessible media found.')
+              : (scanDeleted
+                  ? 'Found ${files.length} possible recoverable traces.'
+                  : 'Found ${files.length} accessible files.'),
+          phase: 'complete',
+          totalScanned: payload.scannedCount,
+        );
+        return;
+      } catch (e) {
+        debugPrint('MediaStore scan fallback due to error: $e');
+        if (!usedFallback) {
+          yield* _scanWithLegacy(fileType, scanDeleted);
+          return;
+        }
+      }
+    }
+
+    yield* _scanWithLegacy(fileType, scanDeleted);
+  }
+
+  Stream<ScanProgress> _scanWithLegacy(String fileType, bool scanDeleted) async* {
+    final base = _baseStream(fileType, scanDeleted);
     await for (final progress in base) {
       final mapped = _mapPhaseStatus(progress);
+      if (mapped.phase == 'complete') {
+        _lastScanResults = List<RecoverableFile>.from(_scanner.lastScanResults);
+      }
       yield mapped;
     }
+  }
+
+  bool _shouldUseMediaStore(String fileType) {
+    if (!Platform.isAndroid) return false;
+    return fileType == 'photo' || fileType == 'video' || fileType == 'file';
   }
 
   Stream<ScanProgress> _baseStream(String fileType, bool scanDeleted) {
@@ -80,4 +168,3 @@ class FileScannerService {
         category == MediaCategory.messengerMedia;
   }
 }
-

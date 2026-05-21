@@ -19,7 +19,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final List<_OnboardingPage> _pages = const [
     _OnboardingPage(
       icon: Icons.shield_outlined,
-      title: 'Welcome to MediaRestore Vault AI',
+      title: 'Welcome to Media Rescue',
       description:
           'Find and restore accessible, cached, and recently deleted media (device dependent). '
           'Everything stays local on your phone.',
@@ -409,3 +409,4 @@ class _OnboardingPageContentState extends State<_OnboardingPageContent>
     }
   }
 }
+

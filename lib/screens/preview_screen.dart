@@ -81,7 +81,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
     if (file.existsSync()) {
       Share.shareXFiles(
         [XFile(widget.file.path)],
-        text: 'Recovered with Photo Recover',
+        text: 'Recovered with Media Rescue',
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -350,7 +350,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              '${file.extension.toUpperCase()} • ${file.formattedSize}',
+              '${file.extension.toUpperCase()} - ${file.formattedSize}',
               style: TextStyle(
                 color: Colors.white60,
                 fontSize: 13,
@@ -505,3 +505,4 @@ class _PreviewScreenState extends State<PreviewScreen> {
     );
   }
 }
+
