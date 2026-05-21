@@ -79,7 +79,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
             ]),
             _buildSection('4. Local Storage', const [
               'Scan records are stored in a local on-device database.',
-              'Recovered files are copied to /storage/emulated/0/PhotoRecover/.',
+              'Recovered files are copied to /storage/emulated/0/MediaRescue/.',
               'Removing the app removes app data; recovered copies remain until manually deleted.',
             ]),
             _buildSection('5. Third-Party Services', const [

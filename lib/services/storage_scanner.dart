@@ -483,7 +483,7 @@ class StorageScanner {
 
   // ===== SKIP LIST (system/process folders) =====
   static const skipFolderNames = {
-    'node_modules', '.gradle', 'gradle', 'build', 'obsidian', 'PhotoRecover',
+    'node_modules', '.gradle', 'gradle', 'build', 'obsidian', 'PhotoRecover', 'MediaRescue',
     'MIUI', 'MiUI', 'HwBackup', 'huawei', '__MACOSX',
     'dexopt', 'dalvik-cache', 'app-lib', 'app-libs',
     'app-webview', 'app_chrome', 'cache',
@@ -2181,13 +2181,26 @@ class StorageScanner {
 // ============================================================================
 
 class RecoveryService {
-  static const _recoveryBaseFolder = 'PhotoRecover';
+  static const _recoveryBaseFolder = 'MediaRescue';
+  static const _legacyRecoveryBaseFolder = 'PhotoRecover';
 
   Future<String> getRecoveryBasePath() async {
     final basePath = '/storage/emulated/0/$_recoveryBaseFolder';
     final baseDir = Directory(basePath);
     if (!await baseDir.exists()) await baseDir.create(recursive: true);
     return basePath;
+  }
+
+  Future<List<String>> _getRecoveryRoots() async {
+    final roots = <String>[];
+    final current = '/storage/emulated/0/$_recoveryBaseFolder';
+    roots.add(current);
+
+    final legacy = '/storage/emulated/0/$_legacyRecoveryBaseFolder';
+    if (legacy != current && await Directory(legacy).exists()) {
+      roots.add(legacy);
+    }
+    return roots;
   }
 
   Future<String?> recoverFile(RecoverableFile file) async {
@@ -2223,17 +2236,21 @@ class RecoveryService {
   }
 
   Future<int> getRecoveryFolderSize() async {
-    final basePath = await getRecoveryBasePath();
-    final dir = Directory(basePath);
-    if (!await dir.exists()) return 0;
     int totalSize = 0;
-    try {
-      await for (final entity in dir.list(recursive: true, followLinks: false)) {
-        if (entity is File) {
-          try { totalSize += (await entity.stat()).size; } catch (_) {}
+    final roots = await _getRecoveryRoots();
+    for (final root in roots) {
+      final dir = Directory(root);
+      if (!await dir.exists()) continue;
+      try {
+        await for (final entity in dir.list(recursive: true, followLinks: false)) {
+          if (entity is File) {
+            try {
+              totalSize += (await entity.stat()).size;
+            } catch (_) {}
+          }
         }
-      }
-    } catch (_) {}
+      } catch (_) {}
+    }
     return totalSize;
   }
 
@@ -2271,14 +2288,20 @@ class RecoveryService {
 
   Future<bool> clearAllRecoveredFiles() async {
     try {
-      final basePath = await getRecoveryBasePath();
-      final dir = Directory(basePath);
-      if (await dir.exists()) {
-        await dir.delete(recursive: true);
-        await dir.create(recursive: true);
-        return true;
+      final roots = await _getRecoveryRoots();
+      bool changed = false;
+      for (final root in roots) {
+        final dir = Directory(root);
+        if (await dir.exists()) {
+          await dir.delete(recursive: true);
+          changed = true;
+        }
       }
-      return false;
+      final currentDir = Directory('/storage/emulated/0/$_recoveryBaseFolder');
+      if (!await currentDir.exists()) {
+        await currentDir.create(recursive: true);
+      }
+      return changed;
     } catch (_) {
       return false;
     }

@@ -142,7 +142,7 @@ class WhatsAppStatusSaver {
   // Folder paths – saved-status destination
   // ---------------------------------------------------------------------------
 
-  static const String _savedBasePath = '/storage/emulated/0/PhotoRecover/SavedStatus';
+  static const String _savedBasePath = '/storage/emulated/0/MediaRescue/SavedStatus';
   static const String _savedPhotosPath = '$_savedBasePath/Photos';
   static const String _savedVideosPath = '$_savedBasePath/Videos';
 

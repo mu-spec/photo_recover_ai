@@ -42,7 +42,7 @@ class AppColors {
 class AppConstants {
   static const String appName = 'Media Rescue';
   static const String appVersion = '1.0.0';
-  static const String recoveryFolder = 'PhotoRecover';
+  static const String recoveryFolder = 'MediaRescue';
   static const int maxFreeRecoveryPerScan = 10;
   static const int maxScanFilesFree = 100;
   static const String supportEmail = 'saaddkhan99@gmail.com';

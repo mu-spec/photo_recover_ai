@@ -51,7 +51,7 @@ class NoDeletionRiskScreen extends StatelessWidget {
               color: const Color(0xFF10B981),
               title: 'Safe Copy Recovery',
               description:
-                  'When you recover files, we create a COPY in the PhotoRecover folder. Original files stay exactly where they are.',
+                  'When you recover files, we create a COPY in the MediaRescue folder. Original files stay exactly where they are.',
             ),
             const SizedBox(height: 16),
             _buildInfoCard(

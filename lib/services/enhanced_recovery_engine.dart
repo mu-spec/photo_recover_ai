@@ -28,7 +28,7 @@ class RecoveryProgress {
 
 /// Enhanced recovery engine with batch recovery, progress tracking, and history.
 class EnhancedRecoveryEngine {
-  static const _baseFolder = 'PhotoRecover';
+  static const _baseFolder = 'MediaRescue';
 
   final DatabaseHelper _db = DatabaseHelper.instance;
   bool _isCancelled = false;

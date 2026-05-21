@@ -87,7 +87,7 @@ class EnhancedStorageScanner {
 
   static const priorityFolders = ['DCIM','Camera','Pictures','Picture','Download','Downloads','WhatsApp','Telegram','Instagram','TikTok','Snapchat','Signal','Viber','Messenger','Movies','Movie','Music','Video','Recordings','ScreenRecord','ScreenRecording','Bluetooth','Shared','Screenshots','Screenshot','Photos','Photo','Recently Deleted','Trash','Gallery','Images'];
   static const hiddenFolderPatterns = ['.thumbnails','.trashed','.Trash','.THMBDATA','.face','.thumbnail_cache'];
-  static const skipFolders = {'Android','data','cache','Cache','__MACOSX','node_modules','.gradle','build','gradle','obsidian','PhotoRecover','MIUI','MiUI','HwBackup','huawei'};
+  static const skipFolders = {'Android','data','cache','Cache','__MACOSX','node_modules','.gradle','build','gradle','obsidian','PhotoRecover','MediaRescue','MIUI','MiUI','HwBackup','huawei'};
 
   static const int minFileSize = 1024;
   static const int thumbnailMaxSize = 50000;

@@ -148,7 +148,7 @@ class ContactRecoveryService {
   static const String _recoverySubFolder = 'Contacts';
 
   /// Base recovery folder (mirrors [EnhancedRecoveryEngine]).
-  static const String _recoveryBaseFolder = 'PhotoRecover';
+  static const String _recoveryBaseFolder = 'MediaRescue';
 
   // ------------------------------------------------------------------
   // Scanning
@@ -425,7 +425,7 @@ class ContactRecoveryService {
   /// path.
   ///
   /// The destination follows the convention:
-  /// `/storage/emulated/0/PhotoRecover/Contacts/recovered_<timestamp>_<filename>`
+  /// `/storage/emulated/0/MediaRescue/Contacts/recovered_<timestamp>_<filename>`
   static Future<String> recoverContacts(
       ContactRecoveryResult result) async {
     final source = File(result.sourcePath);
