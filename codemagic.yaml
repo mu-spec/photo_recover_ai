@@ -3,11 +3,21 @@ workflows:
     name: Android APK Release
     max_build_duration: 60
     environment:
-      flutter: stable
+      flutter: 3.41.9
+      java: 17
+    cache:
+      cache_paths:
+        - ~/.pub-cache
+        - ~/.gradle/caches
     scripts:
+      - name: Flutter version
+        script: flutter --version
       - name: Get Flutter packages
         script: flutter pub get
-      - name: Build release APK
-        script: flutter build apk --release
+      - name: Build universal release APK
+        script: flutter build apk --release --target-platform android-arm,android-arm64,android-x64
+      - name: Build split APKs by ABI
+        script: flutter build apk --release --split-per-abi --target-platform android-arm,android-arm64,android-x64
     artifacts:
       - build/app/outputs/flutter-apk/app-release.apk
+      - build/app/outputs/flutter-apk/*-release.apk

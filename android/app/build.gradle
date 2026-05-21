@@ -42,6 +42,10 @@ android {
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
+        ndk {
+            // Keep both 32-bit and 64-bit ABIs so APKs install on more phones.
+            abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86_64'
+        }
     }
 
     lintOptions {
@@ -54,6 +58,12 @@ android {
             minifyEnabled false
             shrinkResources false
             signingConfig signingConfigs.debug
+        }
+    }
+
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging true
         }
     }
 }
