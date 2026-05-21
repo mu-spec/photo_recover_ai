@@ -161,6 +161,24 @@ class AdService {
     }
   }
 
+  /// Best-effort helper: tries multiple times to show an interstitial.
+  /// Note: Ad networks may still return no-fill or block showing.
+  Future<bool> showInterstitialGuaranteed({
+    int attempts = 2,
+    int waitTimeoutMs = 2800,
+  }) async {
+    for (int i = 0; i < attempts; i++) {
+      final shown = await showInterstitialAd(
+        waitForLoad: true,
+        waitTimeoutMs: waitTimeoutMs,
+      );
+      if (shown) return true;
+      loadInterstitialAd();
+      await Future.delayed(const Duration(milliseconds: 350));
+    }
+    return false;
+  }
+
   void dispose() {
     _bannerAd?.dispose();
     _interstitialAd?.dispose();

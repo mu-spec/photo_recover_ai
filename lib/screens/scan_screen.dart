@@ -246,7 +246,7 @@ class _ScanScreenState extends State<ScanScreen> with TickerProviderStateMixin {
       _checkController.forward();
 
       // Show interstitial automatically when scan completes.
-      adService.showInterstitialAd(waitForLoad: true, waitTimeoutMs: 2200);
+      adService.showInterstitialGuaranteed(attempts: 2, waitTimeoutMs: 3200);
 
       try {
         // Persist results before user returns to Home stats, so counters refresh correctly.
@@ -814,10 +814,6 @@ class _ScanScreenState extends State<ScanScreen> with TickerProviderStateMixin {
                       ),
                     ),
                   );
-                  // Show interstitial ad after navigation completes
-                  Future.delayed(const Duration(milliseconds: 500), () {
-                    adService.showInterstitialAd(waitForLoad: true, waitTimeoutMs: 1800);
-                  });
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -836,7 +832,8 @@ class _ScanScreenState extends State<ScanScreen> with TickerProviderStateMixin {
             child: SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
-                onPressed: () {
+                onPressed: () async {
+                  await adService.showInterstitialGuaranteed(attempts: 2, waitTimeoutMs: 3200);
                   _pulseController.repeat();
                   _radarController.repeat();
                   setState(() {

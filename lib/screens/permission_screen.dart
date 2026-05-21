@@ -31,7 +31,7 @@ class _PermissionScreenState extends State<PermissionScreen> {
     setState(() => _isRequesting = false);
 
     if (granted) {
-      await adService.showInterstitialAd(waitForLoad: true, waitTimeoutMs: 2200);
+      await adService.showInterstitialGuaranteed(attempts: 2, waitTimeoutMs: 3200);
       if (!mounted) return;
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
