@@ -504,6 +504,7 @@ class _FileDetailScreenState extends State<FileDetailScreen> {
     try {
       final engine = EnhancedRecoveryEngine();
       await for (final progress in engine.recoverSingle(widget.file)) {
+        if (!mounted) return;
         if (progress.completedFiles > 0) {
           setState(() { _recoveryPath = progress.currentFile; _recovered = true; });
         }
@@ -512,8 +513,10 @@ class _FileDetailScreenState extends State<FileDetailScreen> {
         }
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() { _errorMessage = 'Restore failed: ${e.toString()}'; });
     }
+    if (!mounted) return;
     setState(() { _isRecovering = false; });
   }
 
@@ -521,14 +524,17 @@ class _FileDetailScreenState extends State<FileDetailScreen> {
     setState(() { _isRepairing = true; _repairResult = null; _errorMessage = null; });
     try {
       final repairedPath = await FileRepairService.attemptRepair(widget.file.path);
+      if (!mounted) return;
       if (repairedPath != null) {
         setState(() { _repairResult = 'Repaired file saved to: $repairedPath'; });
       } else {
         setState(() { _repairResult = 'File does not need repair or repair was not possible.'; });
       }
     } catch (e) {
+      if (!mounted) return;
       setState(() { _errorMessage = 'Repair failed: ${e.toString()}'; });
     }
+    if (!mounted) return;
     setState(() { _isRepairing = false; });
   }
 

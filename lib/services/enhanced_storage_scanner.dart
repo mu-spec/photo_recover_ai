@@ -107,6 +107,26 @@ class EnhancedStorageScanner {
   void pause() => _isPaused = true;
   void resume() => _isPaused = false;
 
+  void _resetStats() {
+    _stats
+      ..totalFilesScanned = 0
+      ..photoCount = 0
+      ..videoCount = 0
+      ..audioCount = 0
+      ..documentCount = 0
+      ..duplicateCount = 0
+      ..corruptedCount = 0
+      ..thumbnailCount = 0
+      ..highQualityCount = 0
+      ..validCount = 0
+      ..partialCount = 0
+      ..totalBytesFound = 0
+      ..foldersScanned = 0
+      ..filesSkipped = 0
+      ..carvedFiles = 0
+      ..elapsedTime = Duration.zero;
+  }
+
   Future<bool> _waitIfPaused() async {
     while (_isPaused) {
       if (_isCancelled) return true;
@@ -132,6 +152,7 @@ class EnhancedStorageScanner {
     _isCancelled = false;
     _isPaused = false;
     _scanLog.clear();
+    _resetStats();
     final stopwatch = Stopwatch()..start();
     final allResults = <EnhancedScanResult>[];
     final scannedPaths = HashSet<String>();
@@ -159,6 +180,19 @@ class EnhancedStorageScanner {
     });
 
     _log('discovery', 'complete', '/storage/emulated/0', details: 'Found ${discoveredDirs.length} directories');
+    if (discoveredDirs.isEmpty) {
+      yield ScanProgress(
+        progress: 1.0,
+        currentFolder: 'Complete',
+        filesFound: 0,
+        status: 'No accessible storage folders found. Check media permission and try again.',
+        phase: 'complete',
+        totalScanned: 0,
+        folderCount: 0,
+        elapsedSeconds: stopwatch.elapsedMilliseconds ~/ 1000,
+      );
+      return;
+    }
 
     // ================================================================
     // PHASE 2: QUICK SCAN - Priority folders
@@ -417,8 +451,7 @@ class EnhancedStorageScanner {
     final baseDir = Directory('/storage/emulated/0');
     try {
       if (!await baseDir.exists()) return dirs;
-      final entities = await baseDir.list().toList();
-      for (final entity in entities) {
+      await for (final entity in baseDir.list(followLinks: false)) {
         if (_isCancelled) break;
         if (entity is Directory) {
           final name = entity.path.split('/').last;
@@ -441,8 +474,7 @@ class EnhancedStorageScanner {
     if (!await dir.exists()) return;
 
     try {
-      final entities = await dir.list(followLinks: false).toList();
-      for (final entity in entities) {
+      await for (final entity in dir.list(followLinks: false)) {
         if (_isCancelled) break;
         if (await _waitIfPaused()) break;
 

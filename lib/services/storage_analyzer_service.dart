@@ -164,8 +164,7 @@ class StorageAnalyzerService {
     int otherSize = 0;
     int otherFiles = 0;
     try {
-      final entities = await baseDir.list().toList();
-      for (final entity in entities) {
+      await for (final entity in baseDir.list(followLinks: false)) {
         if (entity is! Directory) continue;
         final dirName = _dirName(entity.path);
         if (accountedTopLevelDirs.contains(dirName)) continue;
@@ -269,8 +268,7 @@ class StorageAnalyzerService {
       if (path.trim().isEmpty) return 0;
       final dir = Directory(path);
       if (!await dir.exists()) return 0;
-      final entities = await dir.list(recursive: true, followLinks: false).toList();
-      for (final entity in entities) {
+      await for (final entity in dir.list(recursive: true, followLinks: false)) {
         if (entity is File) {
           try {
             final stat = await entity.stat();
@@ -349,8 +347,7 @@ class StorageAnalyzerService {
     int totalFiles = 0;
 
     try {
-      final entities = await dir.list().toList();
-      for (final entity in entities) {
+      await for (final entity in dir.list(followLinks: false)) {
         if (entity is File) {
           try {
             final len = await entity.length();

@@ -760,8 +760,7 @@ class StorageScanner {
 
       final allTopLevelDirs = <Directory>[];
       try {
-        final entities = await baseDir.list().toList();
-        for (final entity in entities) {
+        await for (final entity in baseDir.list(followLinks: false)) {
           if (_isCancelled) break;
           if (entity is Directory) allTopLevelDirs.add(entity);
         }
@@ -1534,10 +1533,9 @@ class StorageScanner {
     if (!await dir.exists()) return;
 
     try {
-      final entities = await dir.list(followLinks: false).toList();
       int batchCount = 0;
 
-      for (final entity in entities) {
+      await for (final entity in dir.list(followLinks: false)) {
         if (_isCancelled) break;
         if (_isPaused) { await _waitIfPaused(); if (_isCancelled) break; }
 
