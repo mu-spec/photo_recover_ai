@@ -75,7 +75,7 @@ class FileScannerService {
           filesFound: files.length,
           status: files.isEmpty
               ? (scanDeleted
-                  ? 'No deleted traces found on this device. Only accessible and cached media can be restored.'
+                  ? 'No recycle/cache traces found on this device. Only accessible and cached media can be restored.'
                   : 'No matching accessible media found.')
               : (scanDeleted
                   ? 'Found ${files.length} possible recoverable traces.'

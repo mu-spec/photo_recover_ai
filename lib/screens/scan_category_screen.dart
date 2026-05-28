@@ -120,11 +120,11 @@ class ScanCategoryScreen extends StatelessWidget {
   String get _scanDeletedTitle {
     switch (fileType) {
       case 'photo':
-        return 'Scan Recoverable Traces';
+        return 'Scan Media Traces';
       case 'video':
-        return 'Scan Recoverable Traces';
+        return 'Scan Media Traces';
       case 'file':
-        return 'Scan Recoverable Traces';
+        return 'Scan Media Traces';
       default:
         return 'Scan Deleted';
     }
@@ -298,10 +298,10 @@ class ScanCategoryScreen extends StatelessWidget {
                           Expanded(
                             child: Text(
                               fileType == 'photo'
-                                  ? '"Scan Accessible" shows files the app can legally access. "Recoverable Traces" checks recycle bins, cache and messenger folders only.'
+                                  ? '"Scan Accessible" shows files the app can legally access. "Media Traces" checks recycle bins, cache and messenger folders only.'
                                   : fileType == 'video'
-                                      ? '"Scan Accessible" shows files the app can legally access. "Recoverable Traces" checks recycle bins, cache and messenger folders only.'
-                                      : '"Scan Accessible" shows files the app can legally access. "Recoverable Traces" checks recycle bins, cache and messenger folders only.',
+                                      ? '"Scan Accessible" shows files the app can legally access. "Media Traces" checks recycle bins, cache and messenger folders only.'
+                                      : '"Scan Accessible" shows files the app can legally access. "Media Traces" checks recycle bins, cache and messenger folders only.',
                               style: TextStyle(
                                 color: AppTheme.getSecondaryTextColor(context),
                                 fontSize: 13,

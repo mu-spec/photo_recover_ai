@@ -60,7 +60,6 @@
             <ul>
                 <li><strong>READ_MEDIA_IMAGES / READ_MEDIA_VIDEO / READ_MEDIA_AUDIO</strong> (Android 13+): read media for scan and preview.</li>
                 <li><strong>READ_EXTERNAL_STORAGE</strong> (older Android): media/file access where applicable.</li>
-                <li><strong>MANAGE_EXTERNAL_STORAGE</strong>: used only for broader file-scan features when needed.</li>
                 <li><strong>INTERNET / ACCESS_NETWORK_STATE</strong>: ad delivery through Google AdMob.</li>
             </ul>
         </div>
@@ -75,8 +74,8 @@
             <h2>6. Storage and Retention</h2>
             <ul>
                 <li>Scan records are stored locally in the app database.</li>
-                <li>Restored files are copied to <code>/storage/emulated/0/MediaRescue/</code>.</li>
-                <li>Uninstalling the app removes app data; recovered copies may remain until you delete them.</li>
+                <li>Restored copies are saved to <code>/storage/emulated/0/MediaRescue/</code>.</li>
+                <li>Uninstalling the app removes app data; restored copies may remain until you delete them.</li>
             </ul>
         </div>
 
@@ -84,7 +83,7 @@
             <h2>7. User Rights</h2>
             <ul>
                 <li>You can revoke permissions from Android settings at any time.</li>
-                <li>You can delete scan history and recovered copies at any time.</li>
+                <li>You can delete scan history and restored copies at any time.</li>
                 <li>You can uninstall the app whenever you choose.</li>
             </ul>
         </div>

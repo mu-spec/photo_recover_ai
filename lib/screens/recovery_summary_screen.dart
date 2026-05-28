@@ -218,7 +218,7 @@ class _RecoverySummaryScreenState extends State<RecoverySummaryScreen>
     final text =
         '${AppConstants.appName} - Restore Complete!\n\n'
         'Type: ${_fileTypeLabel}\n'
-        'Files Recovered: ${widget.recoveredCount}\n'
+        'Files Restored: ${widget.recoveredCount}\n'
         'Failed: ${widget.failedCount}\n'
         'Success Rate: $successRate%\n'
         'Total Size: $_formattedSize\n'
@@ -261,7 +261,7 @@ class _RecoverySummaryScreenState extends State<RecoverySummaryScreen>
 
                   const SizedBox(height: 24),
 
-                  // ── 4. Recovery Details List ────────────────────────
+                  // ── 4. Restore Details List ────────────────────────
                   _buildStaggeredSection(
                     delay: 900,
                     child: _buildRecoveryDetails(),
@@ -381,7 +381,7 @@ class _RecoverySummaryScreenState extends State<RecoverySummaryScreen>
                 curve: Curves.easeOutCubic,
               )),
               child: const Text(
-                'Recovery Complete!',
+                'Restore Complete!',
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -397,7 +397,7 @@ class _RecoverySummaryScreenState extends State<RecoverySummaryScreen>
           FadeTransition(
             opacity: _fadeController,
             child: Text(
-              '${widget.recoveredCount} ${_fileTypeLabel.toLowerCase()} recovered successfully'
+              '${widget.recoveredCount} ${_fileTypeLabel.toLowerCase()} restored successfully'
               '${widget.failedCount > 0 ? ' (${widget.failedCount} failed)' : ''}',
               style: TextStyle(
                 color: AppTheme.textSecondary,
@@ -420,7 +420,7 @@ class _RecoverySummaryScreenState extends State<RecoverySummaryScreen>
           Expanded(
             child: _buildStatCard(
               icon: Icons.check_circle_outline_rounded,
-              label: 'Files Recovered',
+              label: 'Files Restored',
               value: '${widget.recoveredCount}',
               color: AppTheme.successColor,
             ),
@@ -549,7 +549,7 @@ class _RecoverySummaryScreenState extends State<RecoverySummaryScreen>
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    'Before Recovery',
+                    'Before Restore',
                     style: TextStyle(
                       color: AppTheme.warningColor,
                       fontSize: 12,
@@ -558,7 +558,7 @@ class _RecoverySummaryScreenState extends State<RecoverySummaryScreen>
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '${widget.recoveredCount + widget.failedCount} ${_fileTypeLabel.toLowerCase()} at risk',
+                    '${widget.recoveredCount + widget.failedCount} ${_fileTypeLabel.toLowerCase()} selected',
                     style: TextStyle(
                       color: AppTheme.textSecondary,
                       fontSize: 11,
@@ -629,7 +629,7 @@ class _RecoverySummaryScreenState extends State<RecoverySummaryScreen>
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    'After Recovery',
+                    'After Restore',
                     style: TextStyle(
                       color: AppTheme.successColor,
                       fontSize: 12,
@@ -638,7 +638,7 @@ class _RecoverySummaryScreenState extends State<RecoverySummaryScreen>
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '${widget.recoveredCount} ${_fileTypeLabel.toLowerCase()} safely recovered',
+                    '${widget.recoveredCount} ${_fileTypeLabel.toLowerCase()} safely restored',
                     style: TextStyle(
                       color: AppTheme.textSecondary,
                       fontSize: 11,
@@ -656,7 +656,7 @@ class _RecoverySummaryScreenState extends State<RecoverySummaryScreen>
     );
   }
 
-  // ── Section 4: Recovery Details ────────────────────────────────────────
+  // ── Section 4: Restore Details ────────────────────────────────────────
   Widget _buildRecoveryDetails() {
     final displayNames = widget.recoveredFileNames.take(5).toList();
     final remaining = widget.recoveredFileNames.length - 5;
@@ -695,7 +695,7 @@ class _RecoverySummaryScreenState extends State<RecoverySummaryScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Recovery Details',
+                        'Restore Details',
                         style: TextStyle(
                           color: AppTheme.textPrimary,
                           fontSize: 16,
@@ -762,7 +762,7 @@ class _RecoverySummaryScreenState extends State<RecoverySummaryScreen>
             if (displayNames.isNotEmpty) ...[
               const SizedBox(height: 16),
               Text(
-                'Recovered Files',
+                'Restored Files',
                 style: TextStyle(
                   color: AppTheme.textPrimary,
                   fontSize: 14,
@@ -827,7 +827,7 @@ class _RecoverySummaryScreenState extends State<RecoverySummaryScreen>
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         children: [
-          // Primary: View Recovered Files
+          // Primary: View restored files
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
@@ -853,7 +853,7 @@ class _RecoverySummaryScreenState extends State<RecoverySummaryScreen>
                   const Icon(Icons.folder_special_outlined, size: 20),
                   const SizedBox(width: 10),
                   const Text(
-                    'View Recovered Files',
+                    'View Restored Files',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,

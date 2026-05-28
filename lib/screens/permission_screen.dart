@@ -157,7 +157,7 @@ class _PermissionScreenState extends State<PermissionScreen> {
                       icon: Icons.restore_outlined,
                       iconColor: const Color(0xFF00D9A6),
                       iconBgColor: const Color(0xFF00D9A6).withOpacity(0.1),
-                      title: 'File Recovery',
+                      title: 'File Restore',
                       description:
                           'Restore accessible files by copying them into your secure local folder.',
                     ),

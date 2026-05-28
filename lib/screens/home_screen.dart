@@ -169,7 +169,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 // === PHOTOS ===
                 RecoveryTypeCard(
                   title: 'Restore Photos',
-                  description: 'Scan accessible photos and possible recoverable traces',
+                  description: 'Scan accessible photos and possible media traces',
                   icon: Icons.photo_library_outlined,
                   gradientColors: AppColors.gradientPrimary,
                   onTap: () => _openScanCategory('photo'),
@@ -180,7 +180,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 // === VIDEOS ===
                 RecoveryTypeCard(
                   title: 'Restore Videos',
-                  description: 'Scan accessible videos and possible recoverable traces',
+                  description: 'Scan accessible videos and possible media traces',
                   icon: Icons.videocam_outlined,
                   gradientColors: AppColors.gradientAccent,
                   onTap: () => _openScanCategory('video'),
@@ -191,7 +191,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 // === FILES ===
                 RecoveryTypeCard(
                   title: 'Restore Files',
-                  description: 'Scan accessible files and recoverable traces',
+                  description: 'Scan accessible files and media traces',
                   icon: Icons.folder_outlined,
                   gradientColors: AppColors.gradientWarm,
                   onTap: () => _openScanCategory('file'),
@@ -201,7 +201,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 // Quick Stats
                 Text(
-                  'Recovery Stats',
+                  'Restore Stats',
                   style: TextStyle(
                     color: AppTheme.getPrimaryTextColor(context),
                     fontSize: 18,
@@ -214,7 +214,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Expanded(
                       child: StatsCard(
-                        label: 'Recovered',
+                        label: 'Restored',
                         value: _statsLoaded ? _totalRecovered.toString() : '-',
                         icon: Icons.check_circle_outline,
                         color: AppTheme.successColor,
@@ -270,8 +270,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 _QuickActionTile(
                   icon: Icons.restore_outlined,
                   color: AppTheme.primaryColor,
-                  title: 'Recovered Files',
-                  subtitle: 'View all recovered files',
+                  title: 'Restored Files',
+                  subtitle: 'View all restored copies',
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
@@ -284,7 +284,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 _QuickActionTile(
                   icon: Icons.shield_outlined,
                   color: const Color(0xFF10B981),
-                  title: 'How Recovery Works',
+                  title: 'How Restore Works',
                   subtitle: 'Learn how we keep your files safe',
                   onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NoDeletionRiskScreen())),
                 ),

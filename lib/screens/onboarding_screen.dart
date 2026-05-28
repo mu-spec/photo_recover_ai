@@ -43,7 +43,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     ),
     _OnboardingPage(
       icon: Icons.psychology_outlined,
-      title: 'Smart Recovery',
+      title: 'Smart Restore',
       description:
           'Smart scanning indexes Camera, Gallery, WhatsApp and other accessible folders. '
           'Results are categorized into existing media, cache, and recently deleted traces.',
@@ -55,10 +55,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     ),
     _OnboardingPage(
       icon: Icons.restore_outlined,
-      title: 'One Tap Recovery',
+      title: 'One Tap Restore',
       description:
-          'Select files and recover them instantly to your device. '
-          'Recover files to your device safely with one tap.',
+          'Select files and restore safe local copies to your device. '
+          'Your original files are not changed.',
       illustrationIcons: [
         Icons.touch_app,
         Icons.download_done,

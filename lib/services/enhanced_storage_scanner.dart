@@ -78,7 +78,7 @@ class ScanStatistics {
   Duration elapsedTime = Duration.zero;
 }
 
-/// Multi-phase scanning engine with real file carving.
+/// Multi-phase scanning engine for accessible media and embedded signatures.
 class EnhancedStorageScanner {
   static const photoExtensions = ['.jpg','.jpeg','.png','.gif','.bmp','.webp','.heic','.heif','.tiff','.tif','.svg','.raw','.cr2','.nef','.arw','.srw','.dng','.orf','.rw2','.ico','.avif','.jxl'];
   static const videoExtensions = ['.mp4','.3gp','.mkv','.avi','.mov','.wmv','.flv','.webm','.m4v','.ts','.mts','.m2ts','.ogv'];
@@ -251,18 +251,18 @@ class EnhancedStorageScanner {
     _log('hidden_scan', 'complete', 'hidden_folders', details: 'Found ${hiddenFiles.length + trashFiles.length} files');
 
     // ================================================================
-    // PHASE 6: FILE SIGNATURE SCANNING (FILE CARVING) - THE REAL RECOVERY
+    // PHASE 6: FILE SIGNATURE SCANNING
     // ================================================================
-    yield ScanProgress(progress: 0.80, currentFolder: 'Signature Scan', filesFound: allResults.length, status: 'Raw byte scanning (file carving)...', phase: 'carving', elapsedSeconds: stopwatch.elapsedMilliseconds ~/ 1000);
+    yield ScanProgress(progress: 0.80, currentFolder: 'Signature Scan', filesFound: allResults.length, status: 'Scanning accessible files for embedded media signatures...', phase: 'carving', elapsedSeconds: stopwatch.elapsedMilliseconds ~/ 1000);
     if (await _waitIfPaused()) return;
 
     _log('carving', 'start', 'signature_scan', details: 'Starting file signature scanning');
-    final carvedFiles = await _runFileCarving(extensions, scannedPaths);
-    for (final carved in carvedFiles) {
-      allResults.add(carved);
+    final signatureFiles = await _runFileCarving(extensions, scannedPaths);
+    for (final signatureFile in signatureFiles) {
+      allResults.add(signatureFile);
       _stats.carvedFiles++;
     }
-    _log('carving', 'complete', 'signature_scan', details: 'Carved ${carvedFiles.length} files');
+    _log('carving', 'complete', 'signature_scan', details: 'Matched ${signatureFiles.length} embedded signatures');
 
     // ================================================================
     // PHASE 7: ANALYSIS - Validate, score, deduplicate
@@ -293,9 +293,9 @@ class EnhancedStorageScanner {
     );
   }
 
-  /// Run file carving on cache/data files that may contain embedded files.
+  /// Scan cache/data files that may contain embedded media signatures.
   Future<List<EnhancedScanResult>> _runFileCarving(List<String> targetExtensions, Set<String> knownPaths) async {
-    final carvedResults = <EnhancedScanResult>[];
+    final signatureResults = <EnhancedScanResult>[];
     final carvingTargets = <String>[];
 
     // Find large files that may contain embedded data
@@ -330,18 +330,16 @@ class EnhancedStorageScanner {
       } catch (_) {}
     }
 
-    // Carve each target file
+    // Scan each target file for embedded signatures.
     _signatureScanner.reset();
     for (final targetPath in carvingTargets) {
       if (_isCancelled) break;
-      if (carvedResults.length >= 200) break; // Limit carved files
+      if (signatureResults.length >= 200) break;
 
       try {
         await for (final progress in _signatureScanner.carveFile(targetPath, _getSourceName(targetPath))) {
-          // Extract carved files
           if (progress.phase == 'complete' && progress.filesFound > 0) {
-            // For each carved result, we would extract - but since we're scanning,
-            // we'll record the original file as a recovery candidate
+            // Signature matches are used as confidence signals for accessible files.
           }
         }
       } catch (_) {}
@@ -354,7 +352,7 @@ class EnhancedStorageScanner {
         final sig = await _signatureScanner.identifyFile(path);
         if (sig != null) {
           // Update confidence for files with valid signatures
-          for (final r in carvedResults) {
+          for (final r in signatureResults) {
             if (r.file.path == path) {
               r.detectedSignature = sig.name;
               r.confidenceScore = (r.confidenceScore ?? 50) + 10;
@@ -364,7 +362,7 @@ class EnhancedStorageScanner {
       } catch (_) {}
     }
 
-    return carvedResults;
+    return signatureResults;
   }
 
   /// Analyze all results: validate, score, deduplicate.

@@ -15,9 +15,11 @@ class PermissionManager {
       return false;
     }
 
-    // "file" scans usually need broader access for non-media docs.
+    // File scans stay on scoped/media permissions for Play Store safety.
+    if (await _ensure(Permission.photos)) return true;
+    if (await _ensure(Permission.videos)) return true;
+    if (await _ensure(Permission.audio)) return true;
     if (await _ensure(Permission.storage)) return true;
-    if (await _ensure(Permission.manageExternalStorage)) return true;
     return false;
   }
 
@@ -34,4 +36,3 @@ class PermissionManager {
     return false;
   }
 }
-

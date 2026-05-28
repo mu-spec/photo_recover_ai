@@ -303,7 +303,7 @@ class _FileDetailScreenState extends State<FileDetailScreen> {
             corruption <= 0.0 ? 'File structure is intact and fully recoverable.' :
             corruption <= 0.3 ? 'Minor issues detected. File should open normally.' :
             corruption <= 0.6 ? 'File has partial damage. Repair may help recover content.' :
-            'Severe corruption detected. Recovery chances are limited.',
+            'Severe corruption detected. Restore chances are limited.',
             style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
           ),
         ],
@@ -416,7 +416,7 @@ class _FileDetailScreenState extends State<FileDetailScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Recovered successfully!', style: TextStyle(color: Colors.green, fontSize: 12, fontWeight: FontWeight.w700)),
+                      Text('Restored successfully!', style: TextStyle(color: Colors.green, fontSize: 12, fontWeight: FontWeight.w700)),
                       const SizedBox(height: 2),
                       Text(_recoveryPath!, style: TextStyle(color: Colors.green.withOpacity(0.8), fontSize: 10), maxLines: 2, overflow: TextOverflow.ellipsis),
                     ],
@@ -449,7 +449,7 @@ class _FileDetailScreenState extends State<FileDetailScreen> {
             icon: _isRecovering
                 ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
                 : const Icon(Icons.restore, size: 20),
-            label: Text(_isRecovering ? 'Recovering...' : 'Recover This File'),
+            label: Text(_isRecovering ? 'Restoring...' : 'Restore This File'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.primaryColor,
               foregroundColor: Colors.white,
@@ -512,7 +512,7 @@ class _FileDetailScreenState extends State<FileDetailScreen> {
         }
       }
     } catch (e) {
-      setState(() { _errorMessage = 'Recovery failed: ${e.toString()}'; });
+      setState(() { _errorMessage = 'Restore failed: ${e.toString()}'; });
     }
     setState(() { _isRecovering = false; });
   }

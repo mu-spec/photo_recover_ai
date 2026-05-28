@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import '../models/recoverable_file.dart';
 
-/// Real file signature definitions for file carving.
-/// Each signature has: magic bytes (header), optional footer, and max file size for recovery.
+/// File signature definitions for accessible embedded-media scanning.
+/// Each signature has: magic bytes (header), optional footer, and max file size.
 class FileSignature {
   final String name;
   final String extension;
@@ -23,7 +23,7 @@ class FileSignature {
   });
 }
 
-/// All supported file signatures for carving.
+/// All supported file signatures for embedded-media scanning.
 class FileSignatures {
   static const signatures = <FileSignature>[
     FileSignature(name: 'JPEG', extension: '.jpg', headerBytes: [0xFF, 0xD8, 0xFF], footerBytes: [0xFF, 0xD9], fileType: 'photo'),
@@ -53,7 +53,7 @@ class FileSignatures {
   ];
 }
 
-/// Fragment status for carved files.
+/// Fragment status for embedded signature matches.
 enum FragmentStatus {
   complete,
   partial,
@@ -61,7 +61,7 @@ enum FragmentStatus {
   oversized,
 }
 
-/// Result of a file carving operation.
+/// Result of an embedded signature scan.
 class CarvedFileResult {
   final String name;
   final String extension;
@@ -105,8 +105,8 @@ class DeepScanProgress {
   });
 }
 
-/// The core file carving engine.
-/// Scans raw bytes of storage to find file signatures and extract embedded files.
+/// The core embedded signature scanner.
+/// Scans bytes of accessible files to find embedded media signatures.
 class FileSignatureScanner {
   static const int maxCarveSize = 50 * 1024 * 1024;
   static const int minCarveSize = 512;
@@ -118,7 +118,7 @@ class FileSignatureScanner {
   void cancel() => _isCancelled = true;
   void reset() => _isCancelled = false;
 
-  /// Scan a single file for embedded file signatures (file carving).
+  /// Scan a single accessible file for embedded media signatures.
   Stream<DeepScanProgress> carveFile(String filePath, String source) async* {
     reset();
     final file = File(filePath);
@@ -245,7 +245,7 @@ class FileSignatureScanner {
     return results;
   }
 
-  /// Extract a carved file from a source file.
+  /// Extract an embedded signature match from a source file.
   Future<bool> extractCarvedFile({
     required String sourceFile,
     required int offset,

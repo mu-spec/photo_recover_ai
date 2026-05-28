@@ -52,7 +52,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
     if (newPath != null && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('File recovered successfully!'),
+          content: Text('File restored successfully!'),
           backgroundColor: AppTheme.successColor,
           action: SnackBarAction(
             label: 'View',
@@ -69,7 +69,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
     } else if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Recovery failed. File may not exist.'),
+          content: Text('Restore failed. File may not exist.'),
           backgroundColor: Color(0xFFFF6B6B),
         ),
       );
@@ -81,7 +81,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
     if (file.existsSync()) {
       Share.shareXFiles(
         [XFile(widget.file.path)],
-        text: 'Recovered with Media Rescue',
+        text: 'Restored with Media Rescue',
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -263,7 +263,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
                 children: [
                   _buildActionButton(
                     icon: Icons.restore,
-                    label: 'Recover',
+                    label: 'Restore Copy',
                     color: AppTheme.primaryColor,
                     onTap: _recoverFile,
                   ),

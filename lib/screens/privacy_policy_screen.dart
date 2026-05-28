@@ -74,13 +74,12 @@ class PrivacyPolicyScreen extends StatelessWidget {
             ]),
             _buildSection('3. Permissions', const [
               'READ_MEDIA_* / READ_EXTERNAL_STORAGE is used to scan accessible media.',
-              'MANAGE_EXTERNAL_STORAGE is used only when broader file access is required.',
               'INTERNET / ACCESS_NETWORK_STATE is used for Google AdMob ad delivery.',
             ]),
             _buildSection('4. Local Storage', const [
               'Scan records are stored in a local on-device database.',
-              'Recovered files are copied to /storage/emulated/0/MediaRescue/.',
-              'Removing the app removes app data; recovered copies remain until manually deleted.',
+              'Restored copies are saved to /storage/emulated/0/MediaRescue/.',
+              'Removing the app removes app data; restored copies remain until manually deleted.',
             ]),
             _buildSection('5. Third-Party Services', const [
               'This app uses Google AdMob. Ad-related processing is governed by Google policies.',

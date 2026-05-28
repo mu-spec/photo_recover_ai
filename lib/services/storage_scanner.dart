@@ -303,7 +303,7 @@ class StorageScanner {
     '.vcf', '.vcard',  // Contact backup files
   ];
 
-  // Temp / backup / partial file extensions (used in deep recovery)
+  // Temp / backup / partial file extensions (used in deep trace scanning)
   static const tempRecoveryExtensions = [
     '.tmp', '.bak', '.part', '.crdownload', '.download', '.pending',
     '.temp', '.cache', '.sav', '.old', '.orig', '.backup',
@@ -581,9 +581,11 @@ class StorageScanner {
         return await _checkAndRequestPermission(Permission.storage);
       case 'file':
       default:
+        if (await _checkAndRequestPermission(Permission.photos)) return true;
+        if (await _checkAndRequestPermission(Permission.videos)) return true;
+        if (await _checkAndRequestPermission(Permission.audio)) return true;
         if (await _checkAndRequestPermission(Permission.storage)) return true;
-        // Request broad storage only when user explicitly runs file scan.
-        return await _checkAndRequestPermission(Permission.manageExternalStorage);
+        return false;
     }
   }
 
@@ -646,7 +648,7 @@ class StorageScanner {
   }
 
   /// Scan DELETED photos — runs full 12-phase deep scan, then FILTERS OUT existing/normal files
-  /// Only shows deleted, recovered, hidden, cached, and carved files
+  /// Only shows recycle-bin, restored-copy, hidden, cached, and signature-matched files.
   Stream<ScanProgress> scanDeletedPhotos() async* {
     yield* _scanFiles('photo', photoExtensions, isDeepScan: true, deletedOnly: true);
   }
@@ -1058,7 +1060,7 @@ class StorageScanner {
 
         yield ScanProgress(
           progress: 0.76, currentFolder: 'Temp & Backup', filesFound: allFiles.length,
-          status: 'Recovered ${tempResults.length} files from temp/backup folders',
+          status: 'Found ${tempResults.length} files from temp/backup folders',
           phase: 'deep_scan', totalScanned: scannedPaths.length,
           totalBytesScanned: totalBytes, storageLocations: locIndex + 1,
           signaturesMatched: _signaturesMatched,
@@ -1286,7 +1288,7 @@ class StorageScanner {
     if (deletedOnly) {
       yield ScanProgress(
         progress: 0.92, currentFolder: 'Filtering', filesFound: allFiles.length,
-        status: 'Filtering out existing files, keeping only deleted/recovered...', phase: 'analysis',
+        status: 'Filtering accessible results, keeping likely recycle/cache traces...', phase: 'analysis',
         totalScanned: scannedPaths.length, totalBytesScanned: totalBytes,
         storageLocations: _storageLocationsScanned, signaturesMatched: _signaturesMatched,
         elapsedSeconds: stopwatch.elapsedMilliseconds ~/ 1000,
@@ -1299,7 +1301,7 @@ class StorageScanner {
       final removed = beforeFilter - allFiles.length;
 
       // Cross-device fallback:
-      // Some OEM ROMs expose deleted traces in unusual locations that can be
+      // Some OEM ROMs expose recycle/cache traces in unusual locations that can be
       // over-filtered by strict existing-file heuristics.
       if (allFiles.isEmpty && (scannedPaths.length > 5000 || _signaturesMatched > 200)) {
         final fallback = preFilterCandidates.where((f) {
@@ -1334,7 +1336,7 @@ class StorageScanner {
 
       yield ScanProgress(
         progress: 0.93, currentFolder: 'Filtered', filesFound: allFiles.length,
-        status: 'Removed $removed existing files. Kept ${allFiles.length} deleted/recovered files.', phase: 'analysis',
+        status: 'Removed $removed regular files. Kept ${allFiles.length} likely trace files.', phase: 'analysis',
         totalScanned: scannedPaths.length, totalBytesScanned: totalBytes,
         storageLocations: _storageLocationsScanned, signaturesMatched: _signaturesMatched,
         elapsedSeconds: stopwatch.elapsedMilliseconds ~/ 1000,
@@ -1870,7 +1872,7 @@ class StorageScanner {
                   size: stat.size,
                   lastModified: stat.modified,
                   fileType: fileType,
-                  source: isOrphaned ? 'Deleted Trace' : 'Hidden',
+                  source: isOrphaned ? 'Media Trace' : 'Hidden',
                   qualityTag: isOrphaned ? 'corrupted' : 'thumbnail',
                 ));
               } catch (_) {}

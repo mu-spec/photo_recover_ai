@@ -223,7 +223,7 @@ class _ScanScreenState extends State<ScanScreen> with TickerProviderStateMixin {
 
       final completionStatus = finalResults.isEmpty
           ? (widget.scanDeleted
-              ? 'No deleted traces found on this device. Only accessible and cached media can be restored.'
+              ? 'No recycle/cache traces found on this device. Only accessible and cached media can be restored.'
               : 'No matching accessible media found.')
           : (widget.scanDeleted
               ? 'Found ${finalResults.length} possible recoverable traces ($recycleCount recycle, $cacheCount cache).'
@@ -256,7 +256,7 @@ class _ScanScreenState extends State<ScanScreen> with TickerProviderStateMixin {
       }
 
       try {
-        // Track scan insights for Recovery Stats / Insights screen.
+        // Track scan insights for restore stats / insights screen.
         await _insights.recordScan(widget.fileType, finalResults.length);
       } catch (e) {
         debugPrint('Insights scan record error: $e');
@@ -519,7 +519,7 @@ class _ScanScreenState extends State<ScanScreen> with TickerProviderStateMixin {
       case 'deep_scan': return 'Deep Scan';
       case 'cache_scan': return 'Cache Scan';
       case 'hidden_scan': return 'Hidden Scan';
-      case 'carving': return 'File Carving';
+      case 'carving': return 'Signature Scan';
       case 'analysis': return 'Analysis';
       case 'complete': return 'Complete';
       default: return 'Scanning';
@@ -786,7 +786,7 @@ class _ScanScreenState extends State<ScanScreen> with TickerProviderStateMixin {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: const [
                 Text(
-                  'No deleted traces found. Try these sources:',
+                  'No recycle/cache traces found. Try these sources:',
                   style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
                 ),
                 SizedBox(height: 6),

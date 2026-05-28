@@ -26,7 +26,7 @@ class RecoveryProgress {
   });
 }
 
-/// Enhanced recovery engine with batch recovery, progress tracking, and history.
+/// Enhanced restore engine with batch copy, progress tracking, and history.
 class EnhancedRecoveryEngine {
   static const _baseFolder = 'MediaRescue';
 
@@ -42,13 +42,13 @@ class EnhancedRecoveryEngine {
     final baseDir = Directory(basePath);
     if (!await baseDir.exists()) await baseDir.create(recursive: true);
     // Create sub-folders
-    for (final sub in ['Photos', 'Videos', 'Audio', 'Documents', 'Carved']) {
+    for (final sub in ['Photos', 'Videos', 'Audio', 'Documents', 'Embedded']) {
       await Directory('$basePath/$sub').create(recursive: true);
     }
     return basePath;
   }
 
-  /// Recover a single file.
+  /// Restore a single accessible file by copying it to the app folder.
   Stream<RecoveryProgress> recoverSingle(RecoverableFile file) async* {
     reset();
     final basePath = await getRecoveryBasePath();
@@ -58,7 +58,7 @@ class EnhancedRecoveryEngine {
 
     yield RecoveryProgress(
       totalFiles: 1, completedFiles: 0, failedFiles: 0, progress: 0.0,
-      currentFile: file.name, status: 'Preparing recovery...',
+      currentFile: file.name, status: 'Preparing restore...',
     );
 
     try {
@@ -85,13 +85,13 @@ class EnhancedRecoveryEngine {
         fileSize: file.size,
       ));
 
-      yield RecoveryProgress(totalFiles: 1, completedFiles: 1, failedFiles: 0, progress: 1.0, currentFile: file.name, status: 'Recovered successfully', bytesRecovered: file.size);
+      yield RecoveryProgress(totalFiles: 1, completedFiles: 1, failedFiles: 0, progress: 1.0, currentFile: file.name, status: 'Restored successfully', bytesRecovered: file.size);
     } catch (e) {
-      yield RecoveryProgress(totalFiles: 1, completedFiles: 0, failedFiles: 1, progress: 1.0, currentFile: file.name, status: 'Recovery failed: ${e.toString()}');
+      yield RecoveryProgress(totalFiles: 1, completedFiles: 0, failedFiles: 1, progress: 1.0, currentFile: file.name, status: 'Restore failed: ${e.toString()}');
     }
   }
 
-  /// Batch recover multiple files with progress tracking.
+  /// Batch restore multiple accessible files with progress tracking.
   Stream<RecoveryProgress> recoverBatch(List<RecoverableFile> files) async* {
     reset();
     final basePath = await getRecoveryBasePath();
@@ -99,7 +99,7 @@ class EnhancedRecoveryEngine {
     int failed = 0;
     int totalBytes = 0;
 
-    yield RecoveryProgress(totalFiles: files.length, completedFiles: 0, failedFiles: 0, progress: 0.0, currentFile: '', status: 'Preparing batch recovery...');
+    yield RecoveryProgress(totalFiles: files.length, completedFiles: 0, failedFiles: 0, progress: 0.0, currentFile: '', status: 'Preparing batch restore...');
 
     for (int i = 0; i < files.length; i++) {
       if (_isCancelled) break;
@@ -133,14 +133,14 @@ class EnhancedRecoveryEngine {
           fileSize: file.size,
         ));
 
-        yield RecoveryProgress(totalFiles: files.length, completedFiles: completed, failedFiles: failed, progress: (i + 1) / files.length, currentFile: file.name, status: 'Recovered $completed/${files.length}', bytesRecovered: totalBytes);
+        yield RecoveryProgress(totalFiles: files.length, completedFiles: completed, failedFiles: failed, progress: (i + 1) / files.length, currentFile: file.name, status: 'Restored $completed/${files.length}', bytesRecovered: totalBytes);
       } catch (e) {
         failed++;
-        yield RecoveryProgress(totalFiles: files.length, completedFiles: completed, failedFiles: failed, progress: (i + 1) / files.length, currentFile: file.name, status: 'Failed: $completed recovered', bytesRecovered: totalBytes);
+        yield RecoveryProgress(totalFiles: files.length, completedFiles: completed, failedFiles: failed, progress: (i + 1) / files.length, currentFile: file.name, status: 'Failed: $completed restored', bytesRecovered: totalBytes);
       }
     }
 
-    final statusMsg = _isCancelled ? 'Cancelled. Recovered $completed files' : 'Complete! Recovered $completed files';
+    final statusMsg = _isCancelled ? 'Cancelled. Restored $completed files' : 'Complete! Restored $completed files';
     yield RecoveryProgress(totalFiles: files.length, completedFiles: completed, failedFiles: failed, progress: 1.0, currentFile: '', status: statusMsg, bytesRecovered: totalBytes);
   }
 

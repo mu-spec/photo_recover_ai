@@ -277,7 +277,7 @@ class FileRepairService {
     }
   }
 
-  /// Extract recoverable JPEG data from a larger file (file carving)
+  /// Extract embedded JPEG data from a larger accessible file.
   static List<String> carveJpegFromData(String sourcePath) {
     final results = <String>[];
     try {

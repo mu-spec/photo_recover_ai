@@ -33,15 +33,15 @@ class TermsOfServiceScreen extends StatelessWidget {
             ]),
             _buildSection('4. Permissions and Storage', const [
               'You must grant required storage/media permissions for scanning features.',
-              'Recovered files are copied to /storage/emulated/0/MediaRescue/.',
-              'You are responsible for managing recovered copies and disk space.',
+              'Restored copies are saved to /storage/emulated/0/MediaRescue/.',
+              'You are responsible for managing restored copies and disk space.',
             ]),
             _buildSection('5. Ads', const [
               'The app is ad-supported and may show Google AdMob advertisements.',
             ]),
             _buildSection('6. Warranty Disclaimer', const [
               'The app is provided "AS IS" and "AS AVAILABLE" without warranties.',
-              'Recovery outcomes vary by Android version, OEM behavior, permissions, and file availability.',
+              'Restore outcomes vary by Android version, OEM behavior, permissions, and file availability.',
             ]),
             _buildSection('7. Limitation of Liability', const [
               'To the maximum extent permitted by law, the developer is not liable for missed recovery expectations, data loss, or indirect damages.',

@@ -17,7 +17,7 @@ class NoDeletionRiskScreen extends StatelessWidget {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Text(
-          'How Recovery Works',
+          'How Restore Works',
           style: TextStyle(
             color: AppTheme.textPrimary,
             fontSize: 20,
@@ -42,14 +42,14 @@ class NoDeletionRiskScreen extends StatelessWidget {
               color: const Color(0xFF6C63FF),
               title: 'Read-Only Scanning',
               description:
-                  'Our scanner only READS your files to find deleted ones. It never modifies, moves, or deletes anything.',
+                  'Our scanner only READS accessible files to find media, cache, and recycle-bin traces. It never modifies, moves, or deletes anything.',
             ),
             const SizedBox(height: 16),
             _buildInfoCard(
               context: context,
               icon: Icons.content_copy,
               color: const Color(0xFF10B981),
-              title: 'Safe Copy Recovery',
+              title: 'Safe Copy Restore',
               description:
                   'When you recover files, we create a COPY in the MediaRescue folder. Original files stay exactly where they are.',
             ),
@@ -60,7 +60,7 @@ class NoDeletionRiskScreen extends StatelessWidget {
               color: const Color(0xFFF59E0B),
               title: 'You Control Everything',
               description:
-                  'Only YOU decide which files to recover. You can delete recovered copies anytime from the Recovered Files screen.',
+                  'Only YOU decide which files to restore. You can delete restored copies anytime from the Restored Files screen.',
             ),
             const SizedBox(height: 48),
 

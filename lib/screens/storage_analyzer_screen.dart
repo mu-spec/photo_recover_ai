@@ -120,21 +120,21 @@ class _StorageAnalyzerScreenState extends State<StorageAnalyzerScreen> {
   }
 
   Future<bool> _ensureStoragePermission() async {
-    if (await Permission.manageExternalStorage.isGranted) {
+    if (await Permission.photos.isGranted ||
+        await Permission.videos.isGranted ||
+        await Permission.audio.isGranted ||
+        await Permission.storage.isGranted) {
       return true;
     }
 
-    if (await Permission.storage.isGranted) {
-      return true;
-    }
-
+    final photosStatus = await Permission.photos.request();
+    final videosStatus = await Permission.videos.request();
+    final audioStatus = await Permission.audio.request();
     final storageStatus = await Permission.storage.request();
-    if (storageStatus.isGranted) {
-      return true;
-    }
-
-    final manageStatus = await Permission.manageExternalStorage.request();
-    return manageStatus.isGranted;
+    return photosStatus.isGranted ||
+        videosStatus.isGranted ||
+        audioStatus.isGranted ||
+        storageStatus.isGranted;
   }
 
   Future<void> _executeCleanup(_CleanupSuggestion suggestion) async {

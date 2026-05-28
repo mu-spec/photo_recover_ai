@@ -243,7 +243,7 @@ class _ScanResultsScreenState extends State<ScanResultsScreen>
                   ),
                   const SizedBox(width: 12),
                   const Text(
-                    'Recovering Files',
+                    'Restoring Copies',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -253,7 +253,7 @@ class _ScanResultsScreenState extends State<ScanResultsScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Recovering ${progressData.current} of ${progressData.total} files...',
+                    'Restoring ${progressData.current} of ${progressData.total} files...',
                     style: TextStyle(
                       color: AppTheme.textSecondary,
                       fontSize: 14,
@@ -311,10 +311,10 @@ class _ScanResultsScreenState extends State<ScanResultsScreen>
       },
     );
 
-    // Give the dialog time to render before starting recovery
+    // Give the dialog time to render before starting restore
     await Future.delayed(const Duration(milliseconds: 400));
 
-    // Recover files one by one with progress updates
+    // Restore files one by one with progress updates
     try {
       for (int i = 0; i < selectedFileObjects.length; i++) {
         final file = selectedFileObjects[i];
@@ -334,11 +334,11 @@ class _ScanResultsScreenState extends State<ScanResultsScreen>
             recoveredNames.add(file.name);
           }
         } catch (_) {
-          // Single file recovery failed - continue with next
+          // Single file restore failed - continue with next
         }
       }
     } catch (e) {
-      // Unexpected error in recovery loop
+      // Unexpected error in restore loop
     }
 
     // Stop stopwatch
@@ -363,7 +363,7 @@ class _ScanResultsScreenState extends State<ScanResultsScreen>
       await _insights.recordRecovery(widget.fileType, recovered, totalSize);
     } catch (_) {}
 
-    // Show interstitial ad after recovery
+    // Show interstitial ad after restore
     adService.showInterstitialAd();
 
     setState(() {
@@ -373,7 +373,7 @@ class _ScanResultsScreenState extends State<ScanResultsScreen>
       _isSelectMode = false;
     });
 
-    // Navigate to RecoverySummaryScreen
+    // Navigate to restore summary
     final recoveryPath = await _recoveryService.getRecoveryBasePath();
     if (!mounted) return;
     Navigator.of(context).pushReplacement(
@@ -471,7 +471,7 @@ class _ScanResultsScreenState extends State<ScanResultsScreen>
                     ),
                     const SizedBox(width: 8),
                     ChoiceChip(
-                      label: const Text('Possible Recoverables'),
+                      label: const Text('Possible Traces'),
                       selected: _showPossibleDeleted,
                       onSelected: (_) => _toggleDeletedResultMode(true),
                     ),
@@ -718,7 +718,7 @@ class _ScanResultsScreenState extends State<ScanResultsScreen>
                     SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        'AI suggests: ${FileAnalyzer.getSmartRecoverySuggestions(_displayedFiles).take(5).length} files worth recovering',
+                        'AI suggests: ${FileAnalyzer.getSmartRecoverySuggestions(_displayedFiles).take(5).length} files worth restoring',
                         style: TextStyle(color: AppTheme.primaryColor, fontSize: 12, fontWeight: FontWeight.w600),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -808,7 +808,7 @@ class _ScanResultsScreenState extends State<ScanResultsScreen>
                                   children: const [
                                     Icon(Icons.restore, size: 20),
                                     SizedBox(width: 8),
-                                    Text('Recover'),
+                                    Text('Restore'),
                                   ],
                                 ),
                         ),
@@ -1172,7 +1172,7 @@ class _ScanResultsScreenState extends State<ScanResultsScreen>
   }
 }
 
-/// Helper class to hold recovery progress data for the dialog
+/// Helper class to hold restore progress data for the dialog
 class _RecoveryProgress {
   final int current;
   final int total;

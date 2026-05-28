@@ -157,7 +157,7 @@ class _RecoveredFilesScreenState extends State<RecoveredFilesScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Recovered Files'),
+        title: const Text('Restored Files'),
         actions: [
           if (_allRecords.isNotEmpty)
             IconButton(
@@ -239,7 +239,7 @@ class _RecoveredFilesScreenState extends State<RecoveredFilesScreen>
                 : currentList.isEmpty
                     ? EmptyStateWidget(
                         icon: Icons.folder_open_outlined,
-                        title: 'No Recovered Files',
+                        title: 'No Restored Files',
                         description:
                             'Your restored files will appear here. Start a scan to find accessible or recoverable traces.',
                       )

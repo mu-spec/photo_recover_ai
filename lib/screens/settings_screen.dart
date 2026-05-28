@@ -96,7 +96,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _checkRecoveryFolder();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Recovery folder created successfully!'),
+            content: Text('Restore folder created successfully!'),
             backgroundColor: AppTheme.successColor,
           ),
         );
@@ -199,8 +199,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               color: const Color(0xFF6C63FF),
               title: 'Notifications',
               subtitle: settingsProvider.notificationsEnabled
-                  ? 'Recovery notifications enabled'
-                  : 'Recovery notifications disabled',
+                  ? 'Restore notifications enabled'
+                  : 'Restore notifications disabled',
               trailing: Switch(
                 value: settingsProvider.notificationsEnabled,
                 onChanged: (val) async {
@@ -317,7 +317,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             _buildSettingsTile(
               icon: _recoveryFolderExists ? Icons.folder_outlined : Icons.folder_off_outlined,
               color: _recoveryFolderExists ? const Color(0xFF22c55e) : const Color(0xFFF59E0B),
-              title: 'Recovery Folder',
+              title: 'Restore Folder',
               subtitle: _recoveryFolderExists
                   ? '$_recoveryPath ($_recoveredCount files)'
                   : '$_recoveryPath (Not found)',
@@ -331,7 +331,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ? () {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('Recovery path: $_recoveryPath'),
+                          content: Text('Restore path: $_recoveryPath'),
                           action: SnackBarAction(
                             label: 'Copy',
                             textColor: Colors.white,
@@ -360,7 +360,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     title: const Text('Clear Cache'),
                     content: const Text(
-                        'This will clear scan results and cached data. Recovered files will not be affected.'),
+                        'This will clear scan results and cached data. Restored copies will not be affected.'),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.of(context).pop(),
