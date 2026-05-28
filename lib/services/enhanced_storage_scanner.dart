@@ -334,7 +334,7 @@ class EnhancedStorageScanner {
 
     // Find large files that may contain embedded data
     final carveSearchPaths = [
-      '/storage/emulated/0/Android/data',
+      '/storage/emulated/0/Android/media',
       '/storage/emulated/0/DCIM/.thumbnails',
       '/storage/emulated/0/.thumbnails',
       '/storage/emulated/0/Download',
@@ -519,7 +519,7 @@ class EnhancedStorageScanner {
 
   Future<List<RecoverableFile>> _scanCacheFolders(List<String> extensions, String fileType, Set<String> scannedPaths) async {
     final files = <RecoverableFile>[];
-    final cachePaths = ['/storage/emulated/0/Android/data/com.whatsapp/cache','/storage/emulated/0/Android/data/com.whatsapp/WhatsApp/Media','/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media','/storage/emulated/0/WhatsApp/Media','/storage/emulated/0/Android/data/com.instagram.android/cache','/storage/emulated/0/Android/data/com.snapchat.android/cache','/storage/emulated/0/Android/data/com.zhiliaoapp.musically/cache','/storage/emulated/0/Android/data/com.facebook.katana/cache','/storage/emulated/0/Android/data/org.telegram.messenger/cache','/storage/emulated/0/Telegram','/storage/emulated/0/Android/data/com.google.android.apps.photos/cache','/storage/emulated/0/Android/data/com.twitter.android/cache','/storage/emulated/0/Android/data/com.linkedin.android/cache','/storage/emulated/0/Android/data/com.ss.android.ugc.aweme/cache'];
+    final cachePaths = ['/storage/emulated/0/Android/media/com.whatsapp/WhatsApp/Media','/storage/emulated/0/WhatsApp/Media','/storage/emulated/0/Telegram','/storage/emulated/0/DCIM/.thumbnails','/storage/emulated/0/Pictures/.thumbnails','/storage/emulated/0/.thumbnails'];
     for (final cachePath in cachePaths) {
       if (_isCancelled) break;
       final dir = Directory(cachePath);

@@ -334,85 +334,19 @@ class StorageScanner {
 
   // ===== CORE APP MEDIA CACHE PATHS =====
   static const appMediaCorePaths = [
-    // Messaging apps
-    'Android/data/com.whatsapp',
-    'Android/data/com.whatsapp.w4b',
     'Android/media/com.whatsapp',
-    'Android/data/org.telegram.messenger',
-    'Android/data/com.instagram.android',
+    'Android/media/com.whatsapp.w4b',
+    'Android/media/org.telegram.messenger',
     'Android/media/com.instagram.android',
-    'Android/data/com.snapchat.android',
-    'Android/data/com.facebook.katana',
-    'Android/data/com.facebook.orca',
-    'Android/data/com.zhiliaoapp.musically',
-    'Android/data/com.ss.android.ugc.aweme',
-    'Android/data/com.tencent.mm',           // WeChat
-    'Android/data/com.viber.voip',
-    'Android/data/jp.naver.line.android',    // LINE
-    'Android/data/com.discord',
-    'Android/data/com.kakao.talk',           // KakaoTalk
-    'Android/data/com.linkedin.android',
-    'Android/data/com.twitter.android',
-    'Android/data/com.pinterest',
-    'Android/data/com.signalvpn',            // Signal variant
-    'Android/data/org.thoughtcrime.securesms', // Signal proper
-    'Android/data/com.samsung.android.messaging',
-    'Android/data/com.google.android.apps.messaging',
-    'Android/data/com.android.mms',
-    'Android/data/com.alibaba.android.rimet', // DingTalk
-    // Photo/Video editing
-    'Android/data/com.miui.gallery',
-    'Android/data/com.huawei.himovie',
-    'Android/data/com.utorrent.client',
-    'Android/data/com.viva.video',
-    'Android/data/com.nexstreaming.app.jellyvideomaker', // CapCut
-    'Android/data/com.ss.android.ugc.aweme', // TikTok/CapCut
-    'Android/data/com.zideate',              // InShot
-    'Android/data/com.cheetah.mobile.videomate',
-    'Android/data/com.kmplayer',             // KMPlayer
-    'Android/data/com.mxtech.videoplayer.ad', // MX Player
-    'Android/data/com.mxtech.videoplayer.pro', // MX Player Pro
-    'Android/data/org.videolan.vlc',
-    'Android/data/com.google.android.apps.youtube',
-    'Android/data/com.spotify.music',
-    'Android/data/com.amazon.mShop.android.shopping',
-    'Android/data/com.google.android.apps.photos',
-    'Android/data/com.google.android.gms',
-    'Android/data/com.samsung.android.vocorder',
-    // Cloud / File managers
-    'Android/data/com.microsoft.skydrive',   // OneDrive
-    'Android/data/com.dropbox.android',
-    'Android/data/com.google.android.apps.docs', // Google Drive
-    'Android/data/com.alibaba.android.rimet',
-    'Android/data/com.estrongs.android.pop', // ES File Explorer
-    'Android/data/com.google.android.apps.nbu.files', // Files by Google
-    // Browsers (cache downloaded images/videos)
-    'Android/data/com.android.chrome',
-    'Android/data/com.chrome.beta',
-    'Android/data/org.mozilla.firefox',
-    'Android/data/com.opera.browser',
-    'Android/data/com.opera.mini.native',
-    'Android/data/com.UCMobile.intl',        // UC Browser
-    'Android/data/com.sec.android.app.sbrowser', // Samsung Internet
-    'Android/data/com.brave.browser',
-    'Android/data/com.microsoft.emmx',       // Edge
-    'Android/data/com.google.androidbrowser', // Android Browser
-    'Android/data/org.chromium.chrome',
-    // Social media
-    'Android/data/com.reddit.frontpage',
-    'Android/data/com.whatsapp.w4b',
-    'Android/data/com.like.android',
-    'Android/data/com.zalo.zalo3',
-    'Android/media',                         // Scoped storage media
-    'Android/data/com.tencent.mobileqq',     // QQ
-    'Android/data/com.sina.weibo',           // Weibo
-    'Android/data/com.camscanner.app',       // CamScanner
-    'Android/data/com.xender',               // Xender
-    'Android/data/com.shareit',              // ShareIt
-    'Android/data/com.google.android.videos', // Google TV
-    'Android/data/com.amazon.avod.thirdpartyclient', // Amazon Prime Video
-    'Android/data/com.netflix.mediaclient',   // Netflix
-    'Android/data/com.disney.disneyplus',    // Disney+
+    'Android/media/com.snapchat.android',
+    'Android/media/com.facebook.katana',
+    'Android/media/com.facebook.orca',
+    'Android/media/com.zhiliaoapp.musically',
+    'Android/media/com.ss.android.ugc.aweme',
+    'Android/media/org.thoughtcrime.securesms',
+    'Android/media/com.google.android.apps.photos',
+    'Android/media/com.google.android.apps.docs',
+    'Android/media',
   ];
 
   // Additional package universe to generate 500+ realistic scan paths.
@@ -515,10 +449,6 @@ class StorageScanner {
     final paths = <String>{...appMediaCorePaths};
 
     for (final pkg in _highPriorityPackageIds) {
-      for (final suffix in _generatedPathSuffixes) {
-        paths.add('Android/data/$pkg$suffix');
-      }
-
       // Scoped storage media variants.
       paths.add('Android/media/$pkg');
       paths.add('Android/media/$pkg/files');
@@ -528,9 +458,7 @@ class StorageScanner {
 
     // Generic hot spots frequently containing residual media/caches.
     paths.addAll(const [
-      'Android/data',
       'Android/media',
-      'Android/obb',
       'DCIM/.thumbnails',
       'Pictures/.thumbnails',
       'Download',
@@ -1194,65 +1122,6 @@ class StorageScanner {
           totalBytes += allFiles.fold<int>(0, (sum, f) => sum + f.size) - bytesBefore;
         }
 
-        // ============================================================
-        // PHASE 11: DEEP ANDROID/DATA SCAN
-        // ============================================================
-        yield ScanProgress(
-          progress: 0.86, currentFolder: 'App Data', filesFound: allFiles.length,
-          status: 'Deep scanning all app data folders...', phase: 'deep_scan',
-          totalScanned: scannedPaths.length, totalBytesScanned: totalBytes,
-          storageLocations: locIndex + 1, signaturesMatched: _signaturesMatched,
-          elapsedSeconds: stopwatch.elapsedMilliseconds ~/ 1000,
-        );
-
-        try {
-          final androidDataDir = Directory('$baseStoragePath/Android/data');
-          if (await androidDataDir.exists()) {
-            String? lastApp;
-            int appIndex = 0;
-            await for (final entity in androidDataDir.list()) {
-              if (_isCancelled) break;
-              if (await _waitIfPaused()) break;
-              if (entity is Directory) {
-                final appName = entity.path.split('/').last;
-
-                // Skip apps already scanned
-                if (appMediaCachePaths.any((p) => entity.path.contains(p))) continue;
-
-                // Skip system apps by prefix
-                bool skipSystem = false;
-                for (final prefix in skipFolderPrefixes) {
-                  if (appName.startsWith(prefix)) {
-                    skipSystem = true;
-                    break;
-                  }
-                }
-                if (skipSystem) continue;
-
-                appIndex++;
-                if (appName != lastApp) {
-                  yield ScanProgress(
-                    progress: 0.86 + (appIndex % 25) * 0.002,
-                    currentFolder: appName, filesFound: allFiles.length,
-                    status: 'Scanning $appName...', phase: 'deep_scan',
-                    totalScanned: scannedPaths.length, totalBytesScanned: totalBytes,
-                    storageLocations: locIndex + 1, signaturesMatched: _signaturesMatched,
-                    elapsedSeconds: stopwatch.elapsedMilliseconds ~/ 1000,
-                  );
-                  lastApp = appName;
-                }
-
-                final bytesBefore = allFiles.fold<int>(0, (sum, f) => sum + f.size);
-                await _scanDirectoryRecursive(
-                  entity.path, extensions, fileType, scannedPaths, allFiles,
-                  currentDepth: 0, maxDepth: 5, isDeepScan: true,
-                );
-                totalBytes += allFiles.fold<int>(0, (sum, f) => sum + f.size) - bytesBefore;
-              }
-            }
-          }
-        } catch (_) {}
-
         // Also scan Android/media
         try {
           final androidMediaDir = Directory('$baseStoragePath/Android/media');
@@ -1264,16 +1133,6 @@ class StorageScanner {
           }
         } catch (_) {}
 
-        // Also scan Android/obb (some games/apps store media here)
-        try {
-          final obbDir = Directory('$baseStoragePath/Android/obb');
-          if (await obbDir.exists()) {
-            await _scanDirectoryRecursive(
-              obbDir.path, extensions, fileType, scannedPaths, allFiles,
-              currentDepth: 0, maxDepth: 4, isDeepScan: true,
-            );
-          }
-        } catch (_) {}
       } // end deep scan phases
 
       totalDirsScanned += allTopLevelDirs.length;
@@ -1737,11 +1596,7 @@ class StorageScanner {
     final tempDirs = [
       '$basePath/Download',
       '$basePath/Downloads',
-      '$basePath/Android/data/com.android.providers.downloads',
-      '$basePath/Android/data/com.opera.browser/cache',
-      '$basePath/Android/data/com.android.chrome/cache',
-      '$basePath/Android/data/org.mozilla.firefox/cache',
-      '$basePath/Android/data/com.UCMobile.intl/cache',
+      '$basePath/Android/media',
       '$basePath/.Trash',
       '$basePath/Trash',
     ];

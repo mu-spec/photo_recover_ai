@@ -133,7 +133,6 @@ class WhatsAppStatusSaver {
     // Older Android / WhatsApp versions
     '/storage/emulated/0/WhatsApp/Media/.Statuses/',
     // Cache folder (sometimes used for in-progress statuses)
-    '/storage/emulated/0/Android/data/com.whatsapp/cache/',
     // WhatsApp Business
     '/storage/emulated/0/Android/media/com.whatsapp.w4b/WhatsApp/Media/.Statuses/',
   ];

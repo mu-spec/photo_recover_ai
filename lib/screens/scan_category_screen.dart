@@ -113,7 +113,7 @@ class ScanCategoryScreen extends StatelessWidget {
       case 'file':
         return 'Find accessible documents, audio, and app media traces';
       default:
-        return 'Find all files on your device';
+        return 'Find accessible files on your device';
     }
   }
 

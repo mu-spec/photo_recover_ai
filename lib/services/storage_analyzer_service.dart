@@ -103,7 +103,7 @@ class StorageAnalyzerService {
       'name': 'Cache',
       'icon': Icons.cached,
       'color': Colors.grey,
-      'folders': ['Android/data'],
+      'folders': ['Android/media', 'DCIM/.thumbnails', 'Pictures/.thumbnails'],
     },
     {
       'name': 'System',
