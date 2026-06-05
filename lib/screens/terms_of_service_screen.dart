@@ -24,6 +24,7 @@ class TermsOfServiceScreen extends StatelessWidget {
             ]),
             _buildSection('2. Service Scope', const [
               'The app is designed to find and restore accessible, cached, and recently deleted media where available.',
+              'Smart Photo Enhance can improve accessible or restored photo copies using local image processing.',
               'It does not guarantee deleted-file recovery on all devices.',
               'Raw deleted-block recovery is outside normal non-root Android capabilities.',
             ]),
@@ -34,6 +35,7 @@ class TermsOfServiceScreen extends StatelessWidget {
             _buildSection('4. Permissions and Storage', const [
               'You must grant required storage/media permissions for scanning features.',
               'Restored copies are saved to /storage/emulated/0/MediaRescue/.',
+              'Enhanced photo copies are saved to /storage/emulated/0/MediaRescue/Enhanced/ or app-specific storage when Android restricts public folder writes.',
               'You are responsible for managing restored copies and disk space.',
             ]),
             _buildSection('5. Ads', const [

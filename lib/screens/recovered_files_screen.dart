@@ -8,6 +8,7 @@ import '../services/storage_scanner.dart';
 import '../utils/app_theme.dart';
 import '../utils/app_constants.dart';
 import '../widgets/common_widgets.dart';
+import 'smart_photo_enhance_screen.dart';
 
 class RecoveredFilesScreen extends StatefulWidget {
   const RecoveredFilesScreen({super.key});
@@ -348,6 +349,14 @@ class _RecoveredFilesScreenState extends State<RecoveredFilesScreen>
                 case 'share':
                   _shareFile(record.recoveredPath, record.fileName);
                   break;
+                case 'enhance':
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          SmartPhotoEnhanceScreen(initialRecord: record),
+                    ),
+                  );
+                  break;
                 case 'delete':
                   _deleteRecord(record);
                   break;
@@ -373,6 +382,17 @@ class _RecoveredFilesScreenState extends State<RecoveredFilesScreen>
                       Icon(Icons.share, size: 18),
                       SizedBox(width: 10),
                       Text('Share'),
+                    ],
+                  ),
+                ),
+              if (exists && record.fileType == 'photo')
+                const PopupMenuItem(
+                  value: 'enhance',
+                  child: Row(
+                    children: [
+                      Icon(Icons.auto_fix_high, size: 18),
+                      SizedBox(width: 10),
+                      Text('Smart Enhance'),
                     ],
                   ),
                 ),

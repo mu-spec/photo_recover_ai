@@ -71,6 +71,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
               'The app does not require account signup and does not collect personal profile data.',
               'Your photos, videos, and files are not uploaded to our servers.',
               'Scan metadata is processed locally on your device.',
+              'Smart Photo Enhance is processed locally on your device and saves a new enhanced copy.',
             ]),
             _buildSection('3. Permissions', const [
               'READ_MEDIA_* / READ_EXTERNAL_STORAGE is used to scan accessible media.',
@@ -79,6 +80,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
             _buildSection('4. Local Storage', const [
               'Scan records are stored in a local on-device database.',
               'Restored copies are saved to /storage/emulated/0/MediaRescue/.',
+              'Enhanced photo copies are saved to /storage/emulated/0/MediaRescue/Enhanced/ or app-specific storage when Android restricts public folder writes.',
               'Removing the app removes app data; restored copies remain until manually deleted.',
             ]),
             _buildSection('5. Third-Party Services', const [

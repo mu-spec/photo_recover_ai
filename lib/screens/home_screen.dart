@@ -10,6 +10,7 @@ import '../utils/app_constants.dart';
 import '../widgets/common_widgets.dart';
 import 'scan_category_screen.dart';
 import 'recovered_files_screen.dart';
+import 'smart_photo_enhance_screen.dart';
 import 'settings_screen.dart';
 import 'storage_analyzer_screen.dart';
 
@@ -266,6 +267,20 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
+
+                _QuickActionTile(
+                  icon: Icons.auto_fix_high_outlined,
+                  color: const Color(0xFF0EA5E9),
+                  title: 'Smart Photo Enhance',
+                  subtitle: 'Improve restored photo quality locally',
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const SmartPhotoEnhanceScreen(),
+                      ),
+                    );
+                  },
+                ),
 
                 _QuickActionTile(
                   icon: Icons.restore_outlined,
