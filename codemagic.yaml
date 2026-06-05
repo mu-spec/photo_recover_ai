@@ -18,6 +18,9 @@ workflows:
         script: flutter build apk --release --target-platform android-arm,android-arm64,android-x64
       - name: Build split APKs by ABI
         script: flutter build apk --release --split-per-abi --target-platform android-arm,android-arm64,android-x64
+      - name: Build Play Store app bundle
+        script: flutter build appbundle --release --target-platform android-arm,android-arm64,android-x64
     artifacts:
       - build/app/outputs/flutter-apk/app-release.apk
       - build/app/outputs/flutter-apk/*-release.apk
+      - build/app/outputs/bundle/release/app-release.aab
